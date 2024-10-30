@@ -1,0 +1,40 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    container_name: go-ddd-template-app
+    volumes:
+      - .:/go/src/go-ddd-template-docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+  db:
+    image: mysql:latest
+    restart: always
+    container_name: go-ddd-template-app-db
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: go-ddd-template_app
+    hostname: db
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/my.cnf:/etc/mysql/my.cnf
+      - ./db/log/mysql:/var/log/mysql
+      - ./db/sql:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+# マイグレーションは一時的にこの方法でsql実行しているだけ
+# 今後やりたいこと：migrate/migrateの使用とデータ永続化
