@@ -12,3 +12,6 @@ deploy: build
 
 ssh:
 	ssh -i ~/.ssh/gcp_tamurakeito_key tamurakeito@xx.xxx.xx.xx
+
+ini:
+	chmod 755 .init.sh && ./.init.sh
