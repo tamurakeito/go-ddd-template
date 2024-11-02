@@ -13,14 +13,14 @@ import (
 func main() {
 	fmt.Println("sever start")
 	memoHandler := injector.InjectHelloHandler()
+	authHandler := injector.InjectAuthHandler()
 	e := echo.New()
 	// CORSの設定
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		// AllowOrigins: []string{"http://localhost:3000", "http://tamurakeito.tokyo/memo-app"},
 		AllowOrigins: []string{"*"},
 	}))
 
-	handler.InitRouting(e, memoHandler)
+	handler.InitRouting(e, memoHandler, authHandler)
 	// Logger.Fatalはエラーメッセージをログに出力しアプリケーションを停止する
 	// 重要なエラーが発生した場合に使用される
 	// 普通のエラーは通常のエラーハンドリングを使おう

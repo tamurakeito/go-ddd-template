@@ -7,6 +7,7 @@ require github.com/labstack/echo v3.3.10+incompatible
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/golang/mock v1.6.0 // indirect
 )
 
 require (
