@@ -6,7 +6,6 @@ import (
 	"go-ddd-template/src/presentation"
 	"go-ddd-template/src/service"
 	"go-ddd-template/src/usecase"
-	"os"
 )
 
 func InjectDB() infrastructure.SqlHandler {
@@ -30,14 +29,14 @@ func InjectAuthRepository() repository.AuthRepository {
 	sqlHandler := InjectDB()
 	return infrastructure.NewAuthRepository(sqlHandler)
 }
-func InjectTokenGenerator() service.TokenGenerator {
-	secretKey := os.Getenv("JWT_SECRET_KEY")
-	return service.NewTokenGenerator(secretKey)
+func InjectAuthService() service.AuthService {
+	secretKey := infrastructure.LoadJWTSecret()
+	return service.NewAuthService(secretKey)
 }
 func InjectAuthUsecase() usecase.AuthUsecase {
 	authRepo := InjectAuthRepository()
-	tokenGen := InjectTokenGenerator()
-	return usecase.NewAuthUsecase(authRepo, tokenGen)
+	authServ := InjectAuthService()
+	return usecase.NewAuthUsecase(authRepo, authServ)
 }
 func InjectAuthHandler() presentation.AuthHandler {
 	return presentation.NewAuthHandler(InjectAuthUsecase())

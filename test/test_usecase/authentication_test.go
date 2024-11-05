@@ -19,7 +19,7 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 
 	// 共通のモックセットアップ
 	mockAuthRepo := mocks.NewMockAuthRepository(ctrl)
-	mockTokenGen := mocks.NewMockTokenGenerator(ctrl)
+	mockAuthServ := mocks.NewMockAuthService(ctrl)
 	userId := "user"
 	password := "password"
 	expectedAccount := model.Account{Id: 0, UserId: "user", Password: "password", Name: "Test User"}
@@ -27,10 +27,10 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 
 	// --- 正常なケースのテスト ---
 	mockAuthRepo.EXPECT().FindUserId(userId).Return(expectedAccount, nil).Times(1)
-	mockTokenGen.EXPECT().GenerateToken(userId).Return(expectedToken, nil).Times(1)
+	mockAuthServ.EXPECT().GenerateToken(userId).Return(expectedToken, nil).Times(1)
 
 	// ユースケースのインスタンスを作成
-	authUsecase := usecase.NewAuthUsecase(mockAuthRepo, mockTokenGen)
+	authUsecase := usecase.NewAuthUsecase(mockAuthRepo, mockAuthServ)
 
 	// SignInメソッドを呼び出し
 	account, token, err := authUsecase.SignIn(userId, password)

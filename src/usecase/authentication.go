@@ -15,14 +15,14 @@ type AuthUsecase interface {
 }
 
 type authUsecase struct {
-	authRepo       repository.AuthRepository
-	tokenGenerator service.TokenGenerator
+	authRepo repository.AuthRepository
+	authServ service.AuthService
 }
 
-func NewAuthUsecase(authRepo repository.AuthRepository, tokenGen service.TokenGenerator) AuthUsecase {
+func NewAuthUsecase(authRepo repository.AuthRepository, authServ service.AuthService) AuthUsecase {
 	return &authUsecase{
-		authRepo:       authRepo,
-		tokenGenerator: tokenGen,
+		authRepo: authRepo,
+		authServ: authServ,
 	}
 }
 
@@ -45,6 +45,6 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 	}
 
 	// トークンの生成
-	token, err = usecase.tokenGenerator.GenerateToken(userId)
+	token, err = usecase.authServ.GenerateToken(userId)
 	return
 }

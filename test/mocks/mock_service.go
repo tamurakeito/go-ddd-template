@@ -8,33 +8,34 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	echo "github.com/labstack/echo"
 )
 
-// MockTokenGenerator is a mock of TokenGenerator interface.
-type MockTokenGenerator struct {
+// MockAuthService is a mock of AuthService interface.
+type MockAuthService struct {
 	ctrl     *gomock.Controller
-	recorder *MockTokenGeneratorMockRecorder
+	recorder *MockAuthServiceMockRecorder
 }
 
-// MockTokenGeneratorMockRecorder is the mock recorder for MockTokenGenerator.
-type MockTokenGeneratorMockRecorder struct {
-	mock *MockTokenGenerator
+// MockAuthServiceMockRecorder is the mock recorder for MockAuthService.
+type MockAuthServiceMockRecorder struct {
+	mock *MockAuthService
 }
 
-// NewMockTokenGenerator creates a new mock instance.
-func NewMockTokenGenerator(ctrl *gomock.Controller) *MockTokenGenerator {
-	mock := &MockTokenGenerator{ctrl: ctrl}
-	mock.recorder = &MockTokenGeneratorMockRecorder{mock}
+// NewMockAuthService creates a new mock instance.
+func NewMockAuthService(ctrl *gomock.Controller) *MockAuthService {
+	mock := &MockAuthService{ctrl: ctrl}
+	mock.recorder = &MockAuthServiceMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenGenerator) EXPECT() *MockTokenGeneratorMockRecorder {
+func (m *MockAuthService) EXPECT() *MockAuthServiceMockRecorder {
 	return m.recorder
 }
 
 // GenerateToken mocks base method.
-func (m *MockTokenGenerator) GenerateToken(userId string) (string, error) {
+func (m *MockAuthService) GenerateToken(userId string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateToken", userId)
 	ret0, _ := ret[0].(string)
@@ -43,7 +44,21 @@ func (m *MockTokenGenerator) GenerateToken(userId string) (string, error) {
 }
 
 // GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateToken(userId interface{}) *gomock.Call {
+func (mr *MockAuthServiceMockRecorder) GenerateToken(userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateToken), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockAuthService)(nil).GenerateToken), userId)
+}
+
+// JWTMiddleware mocks base method.
+func (m *MockAuthService) JWTMiddleware() echo.MiddlewareFunc {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "JWTMiddleware")
+	ret0, _ := ret[0].(echo.MiddlewareFunc)
+	return ret0
+}
+
+// JWTMiddleware indicates an expected call of JWTMiddleware.
+func (mr *MockAuthServiceMockRecorder) JWTMiddleware() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "JWTMiddleware", reflect.TypeOf((*MockAuthService)(nil).JWTMiddleware))
 }
