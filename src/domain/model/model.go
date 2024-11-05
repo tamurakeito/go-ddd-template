@@ -23,6 +23,8 @@ type AuthRequest struct {
 	Password string `json:"password"`
 }
 type AuthResponse struct {
-	Account Account `json:"account"`
-	Token   string  `json:"token"`
+	Id     int    `json:"id"`
+	UserId string `json:"user_id"`
+	Name   string `json:"name"`
+	Token  string `json:"token"`
 }

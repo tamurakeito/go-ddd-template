@@ -18,8 +18,8 @@ ssh:
 	ssh -i ~/.ssh/gcp_tamurakeito_key tamurakeito@xx.xxx.xx.xx
 
 mock:
-	mockgen -source=src/domain/repository/repository.go -destination=mocks/mock_repository.go -package=mocks
-	mockgen -source=src/service/service.go -destination=mocks/mock_service.go -package=mocks
+	mockgen -source=src/domain/repository/repository.go -destination=test/mocks/mock_repository.go -package=mocks
+	mockgen -source=src/service/service.go -destination=test/mocks/mock_service.go -package=mocks
 
 ini:
 	chmod 755 .init.sh && ./.init.sh

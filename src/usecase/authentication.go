@@ -1,8 +1,9 @@
 package usecase
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
-	"log"
 
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
@@ -29,7 +30,11 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 	// ユーザーをリポジトリから取得
 	account, err = usecase.authRepo.FindUserId(userId)
 	if err != nil {
-		log.Fatal(err)
+		// ユーザーが見つからない場合のエラーハンドリング
+		if errors.Is(err, sql.ErrNoRows) {
+			err = fmt.Errorf("user not found")
+			return
+		}
 		return
 	}
 
@@ -41,10 +46,5 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 
 	// トークンの生成
 	token, err = usecase.tokenGenerator.GenerateToken(userId)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
 	return
 }

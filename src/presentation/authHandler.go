@@ -30,13 +30,29 @@ func (handler *AuthHandler) SignIn() echo.HandlerFunc {
 		account, token, err := handler.authUsecase.SignIn(body.UserId, body.Password)
 
 		result := model.AuthResponse{
-			Account: account,
-			Token:   token,
+			Id:     account.Id,
+			UserId: account.UserId,
+			Name:   account.Name,
+			Token:  token,
 		}
 
+		// if err != nil {
+		// 	return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		// }
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+			switch err.Error() {
+			case "user not found":
+				// ユーザーが存在しない場合のレスポンス
+				return c.JSON(http.StatusNotFound, map[string]string{"error": "user not found"})
+			case "invalid password":
+				// パスワードが一致しない場合のレスポンス
+				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid password"})
+			default:
+				// その他のエラー
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+			}
 		}
+
 		return c.JSON(http.StatusOK, result)
 	}
 
