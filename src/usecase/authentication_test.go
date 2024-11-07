@@ -53,134 +53,165 @@ func Test_authUsecase_SignIn(t *testing.T) {
 		password string
 	}
 
-	tests := []struct {
+	type test struct {
 		name        string
 		fields      fields
 		args        args
 		wantAccount model.Account
 		wantToken   string
 		wantErr     error
-		setupMocks  func()
-	}{
-		{
-			name: "valid user credentials",
-			fields: fields{
-				authRepo:    mockAuthRepo,
-				authServ:    mockAuthServ,
-				encryptServ: mockEncryptServ,
-			},
-			args: args{
-				userId:   "validUser",
-				password: "validPassword",
-			},
-			wantAccount: model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"},
-			wantToken:   "validToken",
-			wantErr:     nil,
-			setupMocks: func() {
-				mockAuthRepo.EXPECT().
-					FindUserId("validUser").
-					Return(model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"}, nil).Times(1)
-				mockAuthServ.EXPECT().
-					GenerateToken("validUser").
-					Return("validToken", nil).Times(1)
-				mockEncryptServ.EXPECT().
-					ComparePassword("hashedPassword", "validPassword").
-					Return(nil).Times(1)
-			},
-		},
-		{
-			name: "User not found",
-			fields: fields{
-				authRepo:    mockAuthRepo,
-				authServ:    mockAuthServ,
-				encryptServ: mockEncryptServ,
-			},
-			args: args{
-				userId:   "unknownUser",
-				password: "anyPassword",
-			},
-			wantAccount: model.Account{},
-			wantToken:   "",
-			wantErr:     fmt.Errorf("user not found"),
-			setupMocks: func() {
-				mockAuthRepo.EXPECT().
-					FindUserId("unknownUser").
-					Return(model.Account{}, sql.ErrNoRows)
-			},
-		},
-		{
-			name: "Invalid password",
-			fields: fields{
-				authRepo:    mockAuthRepo,
-				authServ:    mockAuthServ,
-				encryptServ: mockEncryptServ,
-			},
-			args: args{
-				userId:   "validUser",
-				password: "wrongPassword",
-			},
-			wantAccount: model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"},
-			wantToken:   "",
-			wantErr:     fmt.Errorf("invalid password"),
-			setupMocks: func() {
-				mockAuthRepo.EXPECT().
-					FindUserId("validUser").
-					Return(model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"}, nil)
-				mockEncryptServ.EXPECT().
-					ComparePassword("hashedPassword", "wrongPassword").
-					Return(fmt.Errorf("invalid password"))
-			},
-		}, {
-			name: "Token generation error",
-			fields: fields{
-				authRepo:    mockAuthRepo,
-				authServ:    mockAuthServ,
-				encryptServ: mockEncryptServ,
-			},
-			args: args{
-				userId:   "validUser",
-				password: "validPassword",
-			},
-			wantAccount: model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"},
-			wantToken:   "",
-			wantErr:     fmt.Errorf("token generation failed"),
-			setupMocks: func() {
-				mockAuthRepo.EXPECT().
-					FindUserId("validUser").
-					Return(model.Account{Id: 1, UserId: "validUser", Password: "hashedPassword", Name: "Valid User"}, nil)
-				mockEncryptServ.EXPECT().
-					ComparePassword("hashedPassword", "validPassword").
-					Return(nil)
-				mockAuthServ.EXPECT().
-					GenerateToken("validUser").
-					Return("", fmt.Errorf("token generation failed"))
-			},
-		},
-		{
-			name: "Unexpected error",
-			fields: fields{
-				authRepo:    mockAuthRepo,
-				authServ:    mockAuthServ,
-				encryptServ: mockEncryptServ,
-			},
-			args: args{
-				userId:   "anyUser",
-				password: "anyPassword",
-			},
-			wantAccount: model.Account{},
-			wantToken:   "",
-			wantErr:     fmt.Errorf("unexpected database error"),
-			setupMocks: func() {
-				mockAuthRepo.EXPECT().
-					FindUserId("anyUser").
-					Return(model.Account{}, fmt.Errorf("unexpected database error"))
-			},
-		},
+	}
+
+	tests := []test{
+		func() test {
+			userId := "validUser"
+			password := "validPassword"
+			hashedPassword := "hashedPassword"
+			token := "validToken"
+			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Vaild User"}
+
+			mockAuthRepo.EXPECT().
+				FindUserId(userId).
+				Return(account, nil).Times(1)
+			mockAuthServ.EXPECT().
+				GenerateToken(userId).
+				Return(token, nil).Times(1)
+			mockEncryptServ.EXPECT().
+				ComparePassword(hashedPassword, password).
+				Return(nil).Times(1)
+
+			return test{
+				name: "valid user credentials",
+				fields: fields{
+					authRepo:    mockAuthRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: password,
+				},
+				wantAccount: account,
+				wantToken:   token,
+				wantErr:     nil,
+			}
+		}(),
+		func() test {
+			unknownUser := "unknownUser"
+			anyPaasword := "anyPassword"
+			nilAccount := model.Account{}
+
+			mockAuthRepo.EXPECT().
+				FindUserId(unknownUser).
+				Return(nilAccount, sql.ErrNoRows)
+
+			return test{
+				name: "User not found",
+				fields: fields{
+					authRepo:    mockAuthRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   unknownUser,
+					password: anyPaasword,
+				},
+				wantAccount: nilAccount,
+				wantToken:   "",
+				wantErr:     fmt.Errorf("user not found"),
+			}
+		}(),
+		func() test {
+			userId := "validUser"
+			hashedPassword := "hashedPassword"
+			wrongPassword := "wrongPassword"
+			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
+			err := fmt.Errorf("invalid password")
+
+			mockAuthRepo.EXPECT().
+				FindUserId(userId).
+				Return(account, nil)
+			mockEncryptServ.EXPECT().
+				ComparePassword(hashedPassword, wrongPassword).
+				Return(err)
+
+			return test{
+				name: "Invalid password",
+				fields: fields{
+					authRepo:    mockAuthRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: wrongPassword,
+				},
+				wantAccount: account,
+				wantToken:   "",
+				wantErr:     err,
+			}
+		}(),
+		func() test {
+			userId := "validUser"
+			password := "validPassword"
+			hashedPassword := "hashedPassword"
+			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
+			err := fmt.Errorf("token generation failed")
+
+			mockAuthRepo.EXPECT().
+				FindUserId(userId).
+				Return(account, nil)
+			mockEncryptServ.EXPECT().
+				ComparePassword(hashedPassword, password).
+				Return(nil)
+			mockAuthServ.EXPECT().
+				GenerateToken(userId).
+				Return("", err)
+
+			return test{
+				name: "Token generation error",
+				fields: fields{
+					authRepo:    mockAuthRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: password,
+				},
+				wantAccount: account,
+				wantToken:   "",
+				wantErr:     err,
+			}
+		}(),
+		func() test {
+			userId := "anyUser"
+			nilAccount := model.Account{}
+			err := fmt.Errorf("unexpected database error")
+
+			mockAuthRepo.EXPECT().
+				FindUserId(userId).
+				Return(nilAccount, err)
+
+			return test{
+				name: "Unexpected error",
+				fields: fields{
+					authRepo:    mockAuthRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: "anyPassword",
+				},
+				wantAccount: nilAccount,
+				wantToken:   "",
+				wantErr:     err,
+			}
+		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.setupMocks()
-
 			usecase := &authUsecase{
 				authRepo:    tt.fields.authRepo,
 				authServ:    tt.fields.authServ,
