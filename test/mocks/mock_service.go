@@ -62,3 +62,40 @@ func (mr *MockAuthServiceMockRecorder) JWTMiddleware() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "JWTMiddleware", reflect.TypeOf((*MockAuthService)(nil).JWTMiddleware))
 }
+
+// MockEncryptService is a mock of EncryptService interface.
+type MockEncryptService struct {
+	ctrl     *gomock.Controller
+	recorder *MockEncryptServiceMockRecorder
+}
+
+// MockEncryptServiceMockRecorder is the mock recorder for MockEncryptService.
+type MockEncryptServiceMockRecorder struct {
+	mock *MockEncryptService
+}
+
+// NewMockEncryptService creates a new mock instance.
+func NewMockEncryptService(ctrl *gomock.Controller) *MockEncryptService {
+	mock := &MockEncryptService{ctrl: ctrl}
+	mock.recorder = &MockEncryptServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockEncryptService) EXPECT() *MockEncryptServiceMockRecorder {
+	return m.recorder
+}
+
+// ComparePassword mocks base method.
+func (m *MockEncryptService) ComparePassword(hashedPassword, password string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ComparePassword", hashedPassword, password)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ComparePassword indicates an expected call of ComparePassword.
+func (mr *MockEncryptServiceMockRecorder) ComparePassword(hashedPassword, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ComparePassword", reflect.TypeOf((*MockEncryptService)(nil).ComparePassword), hashedPassword, password)
+}

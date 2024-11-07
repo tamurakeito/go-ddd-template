@@ -33,10 +33,14 @@ func InjectAuthService() service.AuthService {
 	secretKey := infrastructure.LoadJWTSecret()
 	return service.NewAuthService(secretKey)
 }
+func InjectEncryptService() service.EncryptService {
+	return service.NewEncryptService()
+}
 func InjectAuthUsecase() usecase.AuthUsecase {
 	authRepo := InjectAuthRepository()
 	authServ := InjectAuthService()
-	return usecase.NewAuthUsecase(authRepo, authServ)
+	encryptServ := InjectEncryptService()
+	return usecase.NewAuthUsecase(authRepo, authServ, encryptServ)
 }
 func InjectAuthHandler() presentation.AuthHandler {
 	return presentation.NewAuthHandler(InjectAuthUsecase())

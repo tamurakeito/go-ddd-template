@@ -15,14 +15,16 @@ type AuthUsecase interface {
 }
 
 type authUsecase struct {
-	authRepo repository.AuthRepository
-	authServ service.AuthService
+	authRepo    repository.AuthRepository
+	authServ    service.AuthService
+	encryptServ service.EncryptService
 }
 
-func NewAuthUsecase(authRepo repository.AuthRepository, authServ service.AuthService) AuthUsecase {
+func NewAuthUsecase(authRepo repository.AuthRepository, authServ service.AuthService, encryptServ service.EncryptService) AuthUsecase {
 	return &authUsecase{
-		authRepo: authRepo,
-		authServ: authServ,
+		authRepo:    authRepo,
+		authServ:    authServ,
+		encryptServ: encryptServ,
 	}
 }
 
@@ -38,13 +40,13 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 		return
 	}
 
-	// パスワードの検証 (例)
-	if account.Password != password {
+	// err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password))
+	err = usecase.encryptServ.ComparePassword(account.Password, password)
+	if err != nil {
 		err = fmt.Errorf("invalid password")
 		return
 	}
 
-	// トークンの生成
 	token, err = usecase.authServ.GenerateToken(userId)
 	return
 }

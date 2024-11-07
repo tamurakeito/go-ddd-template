@@ -8,16 +8,16 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
-type JWTConfig struct {
+type jwtConfig struct {
 	secretKey []byte
 }
 
 func NewAuthService(secretKey string) AuthService {
-	authService := JWTConfig{secretKey: []byte(secretKey)}
+	authService := jwtConfig{secretKey: []byte(secretKey)}
 	return &authService
 }
 
-func (con *JWTConfig) GenerateToken(userId string) (string, error) {
+func (con *jwtConfig) GenerateToken(userId string) (string, error) {
 	claims := jwt.MapClaims{
 		"userId": userId,
 		"exp":    time.Now().Add(time.Hour * 72).Unix(),
@@ -27,7 +27,7 @@ func (con *JWTConfig) GenerateToken(userId string) (string, error) {
 }
 
 // NewJWTMiddleware はJWTミドルウェアを設定して返す
-func (con *JWTConfig) JWTMiddleware() echo.MiddlewareFunc {
+func (con *jwtConfig) JWTMiddleware() echo.MiddlewareFunc {
 	jwtSecret := con.secretKey
 	if len(jwtSecret) == 0 {
 		panic("JWT_SECRET_KEY environment variable is not set")
