@@ -3,10 +3,10 @@ package usecase
 import (
 	"database/sql"
 	"fmt"
+	"go-ddd-template/mocks"
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/service"
-	"go-ddd-template/test/mocks"
 	"reflect"
 	"testing"
 
