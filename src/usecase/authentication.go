@@ -37,6 +37,7 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 			err = fmt.Errorf("user not found")
 			return
 		}
+		err = fmt.Errorf("failed to retrieve user: %w", err)
 		return
 	}
 
@@ -48,5 +49,9 @@ func (usecase *authUsecase) SignIn(userId string, password string) (account mode
 	}
 
 	token, err = usecase.authServ.GenerateToken(userId)
+	if err != nil {
+		err = fmt.Errorf("failed to generate token: %w", err)
+		return
+	}
 	return
 }

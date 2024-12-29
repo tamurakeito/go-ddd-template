@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"database/sql"
+	"errors"
+	"fmt"
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
 )
@@ -21,8 +24,13 @@ func NewHelloWorldUsecase(helloRepo repository.HelloRepository) HelloWorldUsecas
 func (usecase *helloWorldUsecase) HelloWorldDetail(id int) (detail model.HelloWorld, err error) {
 	hello, err := usecase.helloRepo.Find(id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = fmt.Errorf("no results found")
+			return
+		}
+		err = fmt.Errorf("failed to retrive data: %w", err)
 		return
 	}
-	detail = model.HelloWorld{Id: hello.Id, Hello: []model.Hello{hello}}
+	detail = model.HelloWorld{Id: hello.Id, Hello: hello}
 	return
 }

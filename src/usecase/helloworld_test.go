@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"database/sql"
 	"fmt"
 	"go-ddd-template/mocks"
 	"go-ddd-template/src/domain/model"
@@ -69,9 +70,28 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				},
 				wantDetail: model.HelloWorld{
 					Id:    id,
-					Hello: []model.Hello{entity},
+					Hello: entity,
 				},
 				wantErr: nil,
+			}
+		}(),
+		func() test {
+			id := 5
+
+			mockHelloRepo.EXPECT().
+				Find(id).
+				Return(model.Hello{}, sql.ErrNoRows).Times(1)
+
+			return test{
+				name: "no data case",
+				fields: fields{
+					helloRepo: mockHelloRepo,
+				},
+				args: args{
+					id: id,
+				},
+				wantDetail: model.HelloWorld{},
+				wantErr:    fmt.Errorf("no results found"),
 			}
 		}(),
 		func() test {
@@ -83,7 +103,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				Return(model.Hello{}, err).Times(1)
 
 			return test{
-				name: "error case",
+				name: "unexpected error case",
 				fields: fields{
 					helloRepo: mockHelloRepo,
 				},

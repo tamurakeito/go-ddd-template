@@ -7,8 +7,8 @@ type Hello struct {
 	Tag  bool   `json:"tag"`
 }
 type HelloWorld struct {
-	Id    int     `json:"id"`
-	Hello []Hello `json:"hello"`
+	Id    int   `json:"id"`
+	Hello Hello `json:"hello"`
 }
 
 // authentication
