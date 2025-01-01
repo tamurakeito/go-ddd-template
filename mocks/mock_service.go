@@ -99,3 +99,18 @@ func (mr *MockEncryptServiceMockRecorder) ComparePassword(hashedPassword, passwo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ComparePassword", reflect.TypeOf((*MockEncryptService)(nil).ComparePassword), hashedPassword, password)
 }
+
+// HashPassword mocks base method.
+func (m *MockEncryptService) HashPassword(password string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HashPassword", password)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HashPassword indicates an expected call of HashPassword.
+func (mr *MockEncryptServiceMockRecorder) HashPassword(password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HashPassword", reflect.TypeOf((*MockEncryptService)(nil).HashPassword), password)
+}

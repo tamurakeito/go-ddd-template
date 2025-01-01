@@ -49,31 +49,46 @@ func (mr *MockHelloRepositoryMockRecorder) Find(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockHelloRepository)(nil).Find), id)
 }
 
-// MockAuthRepository is a mock of AuthRepository interface.
-type MockAuthRepository struct {
+// MockAccountRepository is a mock of AccountRepository interface.
+type MockAccountRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthRepositoryMockRecorder
+	recorder *MockAccountRepositoryMockRecorder
 }
 
-// MockAuthRepositoryMockRecorder is the mock recorder for MockAuthRepository.
-type MockAuthRepositoryMockRecorder struct {
-	mock *MockAuthRepository
+// MockAccountRepositoryMockRecorder is the mock recorder for MockAccountRepository.
+type MockAccountRepositoryMockRecorder struct {
+	mock *MockAccountRepository
 }
 
-// NewMockAuthRepository creates a new mock instance.
-func NewMockAuthRepository(ctrl *gomock.Controller) *MockAuthRepository {
-	mock := &MockAuthRepository{ctrl: ctrl}
-	mock.recorder = &MockAuthRepositoryMockRecorder{mock}
+// NewMockAccountRepository creates a new mock instance.
+func NewMockAccountRepository(ctrl *gomock.Controller) *MockAccountRepository {
+	mock := &MockAccountRepository{ctrl: ctrl}
+	mock.recorder = &MockAccountRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthRepository) EXPECT() *MockAuthRepositoryMockRecorder {
+func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 	return m.recorder
 }
 
+// Create mocks base method.
+func (m *MockAccountRepository) Create(userId, password, name string) (model.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", userId, password, name)
+	ret0, _ := ret[0].(model.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockAccountRepositoryMockRecorder) Create(userId, password, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAccountRepository)(nil).Create), userId, password, name)
+}
+
 // FindUserId mocks base method.
-func (m *MockAuthRepository) FindUserId(userId string) (model.Account, error) {
+func (m *MockAccountRepository) FindUserId(userId string) (model.Account, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserId", userId)
 	ret0, _ := ret[0].(model.Account)
@@ -82,7 +97,7 @@ func (m *MockAuthRepository) FindUserId(userId string) (model.Account, error) {
 }
 
 // FindUserId indicates an expected call of FindUserId.
-func (mr *MockAuthRepositoryMockRecorder) FindUserId(userId interface{}) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) FindUserId(userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserId", reflect.TypeOf((*MockAuthRepository)(nil).FindUserId), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserId", reflect.TypeOf((*MockAccountRepository)(nil).FindUserId), userId)
 }

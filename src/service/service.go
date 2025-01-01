@@ -9,4 +9,5 @@ type AuthService interface {
 
 type EncryptService interface {
 	ComparePassword(hashedPassword, password string) error
+	HashPassword(password string) (string, error)
 }

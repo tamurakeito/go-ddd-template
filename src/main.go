@@ -12,8 +12,8 @@ import (
 
 func main() {
 	fmt.Println("sever start")
-	memoHandler := injector.InjectHelloHandler()
-	authHandler := injector.InjectAuthHandler()
+	helloHandler := injector.InjectHelloHandler()
+	accountHandler := injector.InjectAccountHandler()
 	authService := injector.InjectAuthService()
 	e := echo.New()
 	// CORSの設定
@@ -21,7 +21,7 @@ func main() {
 		AllowOrigins: []string{"*"},
 	}))
 
-	handler.InitRouting(e, memoHandler, authHandler, authService)
+	handler.InitRouting(e, helloHandler, accountHandler, authService)
 	// Logger.Fatalはエラーメッセージをログに出力しアプリケーションを停止する
 	// 重要なエラーが発生した場合に使用される
 	// 普通のエラーは通常のエラーハンドリングを使おう

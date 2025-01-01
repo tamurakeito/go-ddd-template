@@ -8,6 +8,7 @@ type HelloRepository interface {
 	Find(id int) (hello model.Hello, err error)
 }
 
-type AuthRepository interface {
+type AccountRepository interface {
 	FindUserId(userId string) (account model.Account, err error)
+	Create(userId string, password string, name string) (account model.Account, err error)
 }

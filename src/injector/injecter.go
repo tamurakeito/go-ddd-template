@@ -25,9 +25,9 @@ func InjectHelloHandler() presentation.HelloHandler {
 	return presentation.NewHelloHandler(InjectHelloUsecase())
 }
 
-func InjectAuthRepository() repository.AuthRepository {
+func InjectAccountRepository() repository.AccountRepository {
 	sqlHandler := InjectDB()
-	return infrastructure.NewAuthRepository(sqlHandler)
+	return infrastructure.NewAccountRepository(sqlHandler)
 }
 func InjectAuthService() service.AuthService {
 	secretKey := infrastructure.LoadJWTSecret()
@@ -36,12 +36,12 @@ func InjectAuthService() service.AuthService {
 func InjectEncryptService() service.EncryptService {
 	return service.NewEncryptService()
 }
-func InjectAuthUsecase() usecase.AuthUsecase {
-	authRepo := InjectAuthRepository()
+func InjectAccountUsecase() usecase.AccountUsecase {
+	accountRepo := InjectAccountRepository()
 	authServ := InjectAuthService()
 	encryptServ := InjectEncryptService()
-	return usecase.NewAuthUsecase(authRepo, authServ, encryptServ)
+	return usecase.NewAccountUsecase(accountRepo, authServ, encryptServ)
 }
-func InjectAuthHandler() presentation.AuthHandler {
-	return presentation.NewAuthHandler(InjectAuthUsecase())
+func InjectAccountHandler() presentation.AccountHandler {
+	return presentation.NewAccountHandler(InjectAccountUsecase())
 }

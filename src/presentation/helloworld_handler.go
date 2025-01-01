@@ -19,7 +19,6 @@ func NewHelloHandler(helloUsecase usecase.HelloWorldUsecase) HelloHandler {
 }
 
 func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
-
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
@@ -37,5 +36,4 @@ func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
 		}
 		return c.JSON(http.StatusOK, model)
 	}
-
 }

@@ -7,11 +7,12 @@ import (
 	"github.com/labstack/echo"
 )
 
-func InitRouting(e *echo.Echo, helloHandler HelloHandler, authHandler AuthHandler, authService service.AuthService) {
+func InitRouting(e *echo.Echo, helloHandler HelloHandler, accountHandler AccountHandler, authService service.AuthService) {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, go-ddd-template!")
 	})
 
 	e.GET("/hello-world/:id", helloHandler.HelloWorldDetail(), authService.JWTMiddleware()) // 認証が必要なエンドポイントにJWTミドルウェアを適用
-	e.POST("/sign-in", authHandler.SignIn())
+	e.POST("/sign-in", accountHandler.SignIn())
+	e.POST("/sign-up", accountHandler.SignUp())
 }
