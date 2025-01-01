@@ -3,9 +3,10 @@ package injector
 import (
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/infrastructure"
-	"go-ddd-template/src/presentation"
+	"go-ddd-template/src/presentation/handler"
 	"go-ddd-template/src/service"
-	"go-ddd-template/src/usecase"
+	usecase_account "go-ddd-template/src/usecase/account"
+	usecase_helloworld "go-ddd-template/src/usecase/helloworld"
 )
 
 func InjectDB() infrastructure.SqlHandler {
@@ -17,12 +18,12 @@ func InjectHelloRepository() repository.HelloRepository {
 	sqlHandler := InjectDB()
 	return infrastructure.NewHelloRepository(sqlHandler)
 }
-func InjectHelloUsecase() usecase.HelloWorldUsecase {
+func InjectHelloUsecase() usecase_helloworld.HelloWorldUsecase {
 	helloRepo := InjectHelloRepository()
-	return usecase.NewHelloWorldUsecase(helloRepo)
+	return usecase_helloworld.NewHelloWorldUsecase(helloRepo)
 }
-func InjectHelloHandler() presentation.HelloHandler {
-	return presentation.NewHelloHandler(InjectHelloUsecase())
+func InjectHelloHandler() handler.HelloHandler {
+	return handler.NewHelloHandler(InjectHelloUsecase())
 }
 
 func InjectAccountRepository() repository.AccountRepository {
@@ -36,12 +37,12 @@ func InjectAuthService() service.AuthService {
 func InjectEncryptService() service.EncryptService {
 	return service.NewEncryptService()
 }
-func InjectAccountUsecase() usecase.AccountUsecase {
+func InjectAccountUsecase() usecase_account.AccountUsecase {
 	accountRepo := InjectAccountRepository()
 	authServ := InjectAuthService()
 	encryptServ := InjectEncryptService()
-	return usecase.NewAccountUsecase(accountRepo, authServ, encryptServ)
+	return usecase_account.NewAccountUsecase(accountRepo, authServ, encryptServ)
 }
-func InjectAccountHandler() presentation.AccountHandler {
-	return presentation.NewAccountHandler(InjectAccountUsecase())
+func InjectAccountHandler() handler.AccountHandler {
+	return handler.NewAccountHandler(InjectAccountUsecase())
 }

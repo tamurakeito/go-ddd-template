@@ -1,4 +1,4 @@
-package usecase
+package usecase_account
 
 import (
 	"database/sql"
@@ -7,6 +7,7 @@ import (
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/service"
+	"go-ddd-template/src/usecase"
 	"reflect"
 	"testing"
 
@@ -118,7 +119,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				},
 				wantAccount: nilAccount,
 				wantToken:   "",
-				wantErr:     fmt.Errorf("user not found"),
+				wantErr:     usecase.ErrUserNotFound,
 			}
 		}(),
 		func() test {
@@ -148,7 +149,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				},
 				wantAccount: account,
 				wantToken:   "",
-				wantErr:     err,
+				wantErr:     usecase.ErrInvalidPassword,
 			}
 		}(),
 		func() test {
@@ -181,7 +182,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				},
 				wantAccount: account,
 				wantToken:   "",
-				wantErr:     fmt.Errorf("failed to generate token: %w", err),
+				wantErr:     usecase.ErrFailedToGenerateToken,
 			}
 		}(),
 		func() test {
@@ -206,7 +207,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				},
 				wantAccount: nilAccount,
 				wantToken:   "",
-				wantErr:     fmt.Errorf("failed to retrieve user: %w", err),
+				wantErr:     usecase.ErrFailedToRetrieveUser,
 			}
 		}(),
 	}
@@ -325,7 +326,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				},
 				wantAccount: model.Account{},
 				wantToken:   "",
-				wantErr:     fmt.Errorf("failed to hash password: %w", err),
+				wantErr:     usecase.ErrFailedToHashPassword,
 			}
 		}(),
 		func() test {
@@ -356,7 +357,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				},
 				wantAccount: model.Account{},
 				wantToken:   "",
-				wantErr:     fmt.Errorf("failed to create account: %w", err),
+				wantErr:     usecase.ErrFailedToCreateAccount,
 			}
 		}(),
 		func() test {
@@ -392,7 +393,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				},
 				wantAccount: account,
 				wantToken:   "",
-				wantErr:     fmt.Errorf("failed to generate token: %w", err),
+				wantErr:     usecase.ErrFailedToGenerateToken,
 			}
 		}(),
 	}

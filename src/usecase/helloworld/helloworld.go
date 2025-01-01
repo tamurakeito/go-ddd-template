@@ -1,11 +1,12 @@
-package usecase
+package usecase_helloworld
 
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
+	"go-ddd-template/src/usecase"
+	"log"
 )
 
 type HelloWorldUsecase interface {
@@ -21,14 +22,15 @@ func NewHelloWorldUsecase(helloRepo repository.HelloRepository) HelloWorldUsecas
 	return &helloUsecase
 }
 
-func (usecase *helloWorldUsecase) HelloWorldDetail(id int) (detail model.HelloWorld, err error) {
-	hello, err := usecase.helloRepo.Find(id)
+func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail model.HelloWorld, err error) {
+	hello, err := u.helloRepo.Find(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			err = fmt.Errorf("no results found")
+			err = usecase.ErrResultsNotFound
 			return
 		}
-		err = fmt.Errorf("failed to retrive data: %w", err)
+		err = usecase.ErrFailedToRetrieveData
+		log.Printf("[SignIn] Error retrieving data: %v", err)
 		return
 	}
 	detail = model.HelloWorld{Id: hello.Id, Hello: hello}

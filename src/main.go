@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"go-ddd-template/src/injector"
-	handler "go-ddd-template/src/presentation"
+	"go-ddd-template/src/presentation"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -21,7 +21,7 @@ func main() {
 		AllowOrigins: []string{"*"},
 	}))
 
-	handler.InitRouting(e, helloHandler, accountHandler, authService)
+	presentation.InitRouting(e, helloHandler, accountHandler, authService)
 	// Logger.Fatalはエラーメッセージをログに出力しアプリケーションを停止する
 	// 重要なエラーが発生した場合に使用される
 	// 普通のエラーは通常のエラーハンドリングを使おう

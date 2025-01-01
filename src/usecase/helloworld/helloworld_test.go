@@ -1,4 +1,4 @@
-package usecase
+package usecase_helloworld
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"go-ddd-template/mocks"
 	"go-ddd-template/src/domain/model"
 	"go-ddd-template/src/domain/repository"
+	"go-ddd-template/src/usecase"
 	"reflect"
 	"testing"
 
@@ -91,7 +92,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					id: id,
 				},
 				wantDetail: model.HelloWorld{},
-				wantErr:    fmt.Errorf("no results found"),
+				wantErr:    usecase.ErrResultsNotFound,
 			}
 		}(),
 		func() test {
@@ -111,7 +112,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					id: id,
 				},
 				wantDetail: model.HelloWorld{},
-				wantErr:    err,
+				wantErr:    usecase.ErrFailedToRetrieveData,
 			}
 		}(),
 	}
