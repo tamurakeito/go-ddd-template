@@ -1,10 +1,11 @@
 package infrastructure
 
 import (
-	"log"
-
+	"database/sql"
+	"errors"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
+	"log"
 )
 
 type HelloRepository struct {
@@ -20,7 +21,12 @@ func (helloRepo *HelloRepository) Find(id int) (hello entity.Hello, err error) {
 	row := helloRepo.SqlHandler.Conn.QueryRow("SELECT id, name, tag FROM hello_world WHERE id = ?", id)
 	err = row.Scan(&hello.Id, &hello.Name, &hello.Tag)
 	if err != nil {
-		log.Fatal(err)
+		if errors.Is(err, sql.ErrNoRows) {
+			err = repository.ErrResourceNotFound
+			return
+		}
+		log.Printf("[Error]HelloRepository.Find: %v", err)
+		err = repository.ErrInternal
 		return
 	}
 	return

@@ -1,20 +1,21 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
-	api_errors "go-ddd-template/src/presentation/errors"
-	usecase_helloworld "go-ddd-template/src/usecase/helloworld"
+	"go-ddd-template/src/presentation/api_error"
+	"go-ddd-template/src/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type HelloHandler struct {
-	helloUsecase usecase_helloworld.HelloWorldUsecase
+	helloUsecase usecase.HelloWorldUsecase
 }
 
-func NewHelloHandler(helloUsecase usecase_helloworld.HelloWorldUsecase) HelloHandler {
+func NewHelloHandler(helloUsecase usecase.HelloWorldUsecase) HelloHandler {
 	helloWorldHandler := HelloHandler{helloUsecase: helloUsecase}
 	return helloWorldHandler
 }
@@ -23,11 +24,15 @@ func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
+			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
 		}
 		entity, err := handler.helloUsecase.HelloWorldDetail(id)
 		if err != nil {
-			return c.JSON(api_errors.GetErrorResponse(err))
+			if errors.Is(err, usecase.ErrResourceNotFound) {
+				return c.JSON(api_error.NewResourceNotFoundError(err.Error()))
+			} else {
+				return c.JSON(api_error.NewInternalError(err, err.Error()))
+			}
 		}
 		return c.JSON(http.StatusOK, entity)
 	}

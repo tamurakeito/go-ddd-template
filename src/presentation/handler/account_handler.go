@@ -1,20 +1,21 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"go-ddd-template/src/domain/entity"
-	api_errors "go-ddd-template/src/presentation/errors"
-	usecase_account "go-ddd-template/src/usecase/account"
+	"go-ddd-template/src/presentation/api_error"
+	"go-ddd-template/src/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type AccountHandler struct {
-	accountUsecase usecase_account.AccountUsecase
+	accountUsecase usecase.AccountUsecase
 }
 
-func NewAccountHandler(accountUsecase usecase_account.AccountUsecase) AccountHandler {
+func NewAccountHandler(accountUsecase usecase.AccountUsecase) AccountHandler {
 	accountHandler := AccountHandler{accountUsecase: accountUsecase}
 	return accountHandler
 }
@@ -24,12 +25,16 @@ func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 		body := entity.SignInRequest{}
 
 		if err := c.Bind(&body); err != nil {
-			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
+			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
 		}
 
 		account, token, err := handler.accountUsecase.SignIn(body.UserId, body.Password)
 		if err != nil {
-			return c.JSON(api_errors.GetErrorResponse(err))
+			if errors.Is(err, usecase.ErrResourceNotFound) {
+				return c.JSON(api_error.NewResourceNotFoundError(err.Error()))
+			} else {
+				return c.JSON(api_error.NewInternalError(err, err.Error()))
+			}
 		}
 
 		result := entity.SignInResponse{
@@ -47,12 +52,16 @@ func (handler *AccountHandler) SignUp() echo.HandlerFunc {
 		body := entity.SignUpRequest{}
 
 		if err := c.Bind(&body); err != nil {
-			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
+			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
 		}
 
 		account, token, err := handler.accountUsecase.SignUp(body.UserId, body.Password, body.Name)
 		if err != nil {
-			return c.JSON(api_errors.GetErrorResponse(err))
+			if errors.Is(err, usecase.ErrResourceConflict) {
+				return c.JSON(api_error.NewResourceConflictError(err.Error()))
+			} else {
+				return c.JSON(api_error.NewInternalError(err, err.Error()))
+			}
 		}
 
 		result := entity.SignUpResponse{
