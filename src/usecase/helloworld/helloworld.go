@@ -3,14 +3,14 @@ package usecase_helloworld
 import (
 	"database/sql"
 	"errors"
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/usecase"
 	"log"
 )
 
 type HelloWorldUsecase interface {
-	HelloWorldDetail(id int) (detail model.HelloWorld, err error)
+	HelloWorldDetail(id int) (detail entity.HelloWorld, err error)
 }
 
 type helloWorldUsecase struct {
@@ -22,7 +22,7 @@ func NewHelloWorldUsecase(helloRepo repository.HelloRepository) HelloWorldUsecas
 	return &helloUsecase
 }
 
-func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail model.HelloWorld, err error) {
+func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail entity.HelloWorld, err error) {
 	hello, err := u.helloRepo.Find(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -33,6 +33,6 @@ func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail model.HelloWorld, e
 		log.Printf("[SignIn] Error retrieving data: %v", err)
 		return
 	}
-	detail = model.HelloWorld{Id: hello.Id, Hello: hello}
+	detail = entity.HelloWorld{Id: hello.Id, Hello: hello}
 	return
 }

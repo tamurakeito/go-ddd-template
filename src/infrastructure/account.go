@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 )
 
@@ -14,13 +14,13 @@ func NewAccountRepository(sqlHandler SqlHandler) repository.AccountRepository {
 	return &accountRepository
 }
 
-func (accountRepo *AccountRepository) FindUserId(userId string) (account model.Account, err error) {
+func (accountRepo *AccountRepository) FindUserId(userId string) (account entity.Account, err error) {
 	row := accountRepo.SqlHandler.Conn.QueryRow("SELECT id, user_id, password, name FROM accounts WHERE user_id = ?", userId)
 	err = row.Scan(&account.Id, &account.UserId, &account.Password, &account.Name)
 	return
 }
 
-func (accountRepo *AccountRepository) Create(userId string, password string, name string) (account model.Account, err error) {
+func (accountRepo *AccountRepository) Create(userId string, password string, name string) (account entity.Account, err error) {
 	result, err := accountRepo.SqlHandler.Conn.Exec("INSERT accounts(user_id, password, name) VALUES (?, ?, ?)", userId, password, name)
 	if err != nil {
 		return account, err
@@ -29,7 +29,7 @@ func (accountRepo *AccountRepository) Create(userId string, password string, nam
 	if err != nil {
 		return account, err
 	}
-	account = model.Account{
+	account = entity.Account{
 		Id:       int(lastInsertId),
 		UserId:   userId,
 		Password: password,

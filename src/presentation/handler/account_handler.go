@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	api_errors "go-ddd-template/src/presentation/errors"
 	usecase_account "go-ddd-template/src/usecase/account"
 
@@ -21,7 +21,7 @@ func NewAccountHandler(accountUsecase usecase_account.AccountUsecase) AccountHan
 
 func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		body := model.SignInRequest{}
+		body := entity.SignInRequest{}
 
 		if err := c.Bind(&body); err != nil {
 			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
@@ -32,7 +32,7 @@ func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 			return c.JSON(api_errors.GetErrorResponse(err))
 		}
 
-		result := model.SignInResponse{
+		result := entity.SignInResponse{
 			Id:     account.Id,
 			UserId: account.UserId,
 			Name:   account.Name,
@@ -44,7 +44,7 @@ func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 
 func (handler *AccountHandler) SignUp() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		body := model.SignUpRequest{}
+		body := entity.SignUpRequest{}
 
 		if err := c.Bind(&body); err != nil {
 			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
@@ -55,7 +55,7 @@ func (handler *AccountHandler) SignUp() echo.HandlerFunc {
 			return c.JSON(api_errors.GetErrorResponse(err))
 		}
 
-		result := model.SignUpResponse{
+		result := entity.SignUpResponse{
 			Id:     account.Id,
 			UserId: account.UserId,
 			Name:   account.Name,

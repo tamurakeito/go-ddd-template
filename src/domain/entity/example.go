@@ -1,4 +1,4 @@
-package model
+package entity
 
 // example
 type Hello struct {

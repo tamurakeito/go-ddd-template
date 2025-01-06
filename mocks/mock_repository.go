@@ -5,7 +5,7 @@
 package mocks
 
 import (
-	model "go-ddd-template/src/domain/model"
+	entity "go-ddd-template/src/domain/entity"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,10 +35,10 @@ func (m *MockHelloRepository) EXPECT() *MockHelloRepositoryMockRecorder {
 }
 
 // Find mocks base method.
-func (m *MockHelloRepository) Find(id int) (model.Hello, error) {
+func (m *MockHelloRepository) Find(id int) (entity.Hello, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", id)
-	ret0, _ := ret[0].(model.Hello)
+	ret0, _ := ret[0].(entity.Hello)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -73,10 +73,10 @@ func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockAccountRepository) Create(userId, password, name string) (model.Account, error) {
+func (m *MockAccountRepository) Create(userId, password, name string) (entity.Account, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", userId, password, name)
-	ret0, _ := ret[0].(model.Account)
+	ret0, _ := ret[0].(entity.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -88,10 +88,10 @@ func (mr *MockAccountRepositoryMockRecorder) Create(userId, password, name inter
 }
 
 // FindUserId mocks base method.
-func (m *MockAccountRepository) FindUserId(userId string) (model.Account, error) {
+func (m *MockAccountRepository) FindUserId(userId string) (entity.Account, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserId", userId)
-	ret0, _ := ret[0].(model.Account)
+	ret0, _ := ret[0].(entity.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

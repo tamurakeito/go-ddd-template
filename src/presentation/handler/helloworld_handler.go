@@ -25,10 +25,10 @@ func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, api_errors.ErrInvalidRequest)
 		}
-		model, err := handler.helloUsecase.HelloWorldDetail(id)
+		entity, err := handler.helloUsecase.HelloWorldDetail(id)
 		if err != nil {
 			return c.JSON(api_errors.GetErrorResponse(err))
 		}
-		return c.JSON(http.StatusOK, model)
+		return c.JSON(http.StatusOK, entity)
 	}
 }

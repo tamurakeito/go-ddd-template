@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go-ddd-template/mocks"
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/usecase"
 	"reflect"
@@ -49,17 +49,17 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 		name       string
 		fields     fields
 		args       args
-		wantDetail model.HelloWorld
+		wantDetail entity.HelloWorld
 		wantErr    error
 	}
 	tests := []test{
 		func() test {
 			id := 1
-			entity := model.Hello{Id: id, Name: "hello, world!", Tag: true}
+			hello := entity.Hello{Id: id, Name: "hello, world!", Tag: true}
 
 			mockHelloRepo.EXPECT().
 				Find(id).
-				Return(entity, nil).Times(1)
+				Return(hello, nil).Times(1)
 
 			return test{
 				name: "success case",
@@ -69,9 +69,9 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				args: args{
 					id: id,
 				},
-				wantDetail: model.HelloWorld{
+				wantDetail: entity.HelloWorld{
 					Id:    id,
-					Hello: entity,
+					Hello: hello,
 				},
 				wantErr: nil,
 			}
@@ -81,7 +81,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 
 			mockHelloRepo.EXPECT().
 				Find(id).
-				Return(model.Hello{}, sql.ErrNoRows).Times(1)
+				Return(entity.Hello{}, sql.ErrNoRows).Times(1)
 
 			return test{
 				name: "no data case",
@@ -91,7 +91,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				args: args{
 					id: id,
 				},
-				wantDetail: model.HelloWorld{},
+				wantDetail: entity.HelloWorld{},
 				wantErr:    usecase.ErrResultsNotFound,
 			}
 		}(),
@@ -101,7 +101,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 
 			mockHelloRepo.EXPECT().
 				Find(id).
-				Return(model.Hello{}, err).Times(1)
+				Return(entity.Hello{}, err).Times(1)
 
 			return test{
 				name: "unexpected error case",
@@ -111,7 +111,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				args: args{
 					id: id,
 				},
-				wantDetail: model.HelloWorld{},
+				wantDetail: entity.HelloWorld{},
 				wantErr:    usecase.ErrFailedToRetrieveData,
 			}
 		}(),

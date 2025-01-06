@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go-ddd-template/mocks"
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/service"
 	"go-ddd-template/src/usecase"
@@ -58,7 +58,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 		name        string
 		fields      fields
 		args        args
-		wantAccount model.Account
+		wantAccount entity.Account
 		wantToken   string
 		wantErr     error
 	}
@@ -69,7 +69,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
 			token := "validToken"
-			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Vaild User"}
+			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Vaild User"}
 
 			mockAccountRepo.EXPECT().
 				FindUserId(userId).
@@ -100,7 +100,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 		func() test {
 			unknownUser := "unknownUser"
 			anyPaasword := "anyPassword"
-			nilAccount := model.Account{}
+			nilAccount := entity.Account{}
 
 			mockAccountRepo.EXPECT().
 				FindUserId(unknownUser).
@@ -126,7 +126,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			userId := "validUser"
 			hashedPassword := "hashedPassword"
 			wrongPassword := "wrongPassword"
-			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
+			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
 			err := fmt.Errorf("invalid password")
 
 			mockAccountRepo.EXPECT().
@@ -156,7 +156,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
-			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
+			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Valid User"}
 			err := fmt.Errorf("failed to generate token")
 
 			mockAccountRepo.EXPECT().
@@ -187,7 +187,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 		}(),
 		func() test {
 			userId := "anyUser"
-			nilAccount := model.Account{}
+			nilAccount := entity.Account{}
 			err := fmt.Errorf("unexpected database error")
 
 			mockAccountRepo.EXPECT().
@@ -261,7 +261,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 		name        string
 		fields      fields
 		args        args
-		wantAccount model.Account
+		wantAccount entity.Account
 		wantToken   string
 		wantErr     error
 	}
@@ -273,7 +273,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			hashedPassword := "hashedPassword"
 			name := "Vaild User"
 			token := "validToken"
-			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: name}
+			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: name}
 
 			mockAccountRepo.EXPECT().
 				Create(userId, hashedPassword, name).
@@ -324,7 +324,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					password: password,
 					name:     name,
 				},
-				wantAccount: model.Account{},
+				wantAccount: entity.Account{},
 				wantToken:   "",
 				wantErr:     usecase.ErrFailedToHashPassword,
 			}
@@ -334,7 +334,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
 			name := "Valid User"
-			account := model.Account{}
+			account := entity.Account{}
 			err := fmt.Errorf("failed to create account")
 
 			mockEncryptServ.EXPECT().
@@ -355,7 +355,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					password: password,
 					name:     name,
 				},
-				wantAccount: model.Account{},
+				wantAccount: entity.Account{},
 				wantToken:   "",
 				wantErr:     usecase.ErrFailedToCreateAccount,
 			}
@@ -365,7 +365,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
 			name := "Valid User"
-			account := model.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: name}
+			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: name}
 			token := ""
 			err := fmt.Errorf("failed to generate token")
 

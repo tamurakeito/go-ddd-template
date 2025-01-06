@@ -5,15 +5,15 @@ import (
 	"errors"
 	"log"
 
-	"go-ddd-template/src/domain/model"
+	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/service"
 	"go-ddd-template/src/usecase"
 )
 
 type AccountUsecase interface {
-	SignIn(userId string, password string) (account model.Account, token string, err error)
-	SignUp(userId string, password string, name string) (account model.Account, token string, err error)
+	SignIn(userId string, password string) (account entity.Account, token string, err error)
+	SignUp(userId string, password string, name string) (account entity.Account, token string, err error)
 }
 
 type accountUsecase struct {
@@ -30,7 +30,7 @@ func NewAccountUsecase(accountRepo repository.AccountRepository, authServ servic
 	}
 }
 
-func (u *accountUsecase) SignIn(userId string, password string) (account model.Account, token string, err error) {
+func (u *accountUsecase) SignIn(userId string, password string) (account entity.Account, token string, err error) {
 	// ユーザーをリポジトリから取得
 	account, err = u.accountRepo.FindUserId(userId)
 	if err != nil {
@@ -61,7 +61,7 @@ func (u *accountUsecase) SignIn(userId string, password string) (account model.A
 	return
 }
 
-func (u *accountUsecase) SignUp(userId string, password string, name string) (account model.Account, token string, err error) {
+func (u *accountUsecase) SignUp(userId string, password string, name string) (account entity.Account, token string, err error) {
 	hashedPassword, err := u.encryptServ.HashPassword(password)
 	if err != nil {
 		err = usecase.ErrFailedToHashPassword
