@@ -13,7 +13,7 @@ func (e *ApiError) Error() string {
 
 // 無効な引数
 func NewInvalidArgumentError(msg string) (int, *ApiError) {
-	return ApiErrorCodeToStatusCode(InvalidArgument),&ApiError{
+	return ApiErrorCodeToStatusCode(InvalidArgument), &ApiError{
 		Err:     errors.New(msg),
 		Message: msg,
 	}
@@ -21,7 +21,7 @@ func NewInvalidArgumentError(msg string) (int, *ApiError) {
 
 // リソースが見つからない
 func NewResourceNotFoundError(msg string) (int, *ApiError) {
-	return ApiErrorCodeToStatusCode(ResourceNotFound),&ApiError{
+	return ApiErrorCodeToStatusCode(ResourceNotFound), &ApiError{
 		Err:     errors.New(msg),
 		Message: msg,
 	}
@@ -29,7 +29,7 @@ func NewResourceNotFoundError(msg string) (int, *ApiError) {
 
 // リソースの競合
 func NewResourceConflictError(msg string) (int, *ApiError) {
-	return ApiErrorCodeToStatusCode(ResourceConflict),&ApiError{
+	return ApiErrorCodeToStatusCode(ResourceConflict), &ApiError{
 		Err:     errors.New(msg),
 		Message: msg,
 	}
@@ -60,7 +60,7 @@ func NewResourceConflictError(msg string) (int, *ApiError) {
 // }
 
 func NewInternalError(err error, msg string) (int, *ApiError) {
-	return ApiErrorCodeToStatusCode(Internal),&ApiError{
+	return ApiErrorCodeToStatusCode(Internal), &ApiError{
 		Err:     err,
 		Message: msg,
 	}

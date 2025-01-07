@@ -13,7 +13,7 @@ curl -X POST \
 -H "Content-Type: application/json" \
 -d '{
   "user_id": "exampleUser",
-  "password": "examplePassword",
+  "password": "examplePassword"
 }' \
 http://localhost:8080/sign-in
 ```
