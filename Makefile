@@ -26,3 +26,6 @@ tests:
 
 ini:
 	chmod 755 .init.sh && ./.init.sh
+
+local_test:
+	open tools/local_integration_test/test.html
