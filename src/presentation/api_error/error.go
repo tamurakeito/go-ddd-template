@@ -1,7 +1,5 @@
 package api_error
 
-import "errors"
-
 type ApiError struct {
 	Err     error
 	Message string
@@ -12,64 +10,64 @@ func (e *ApiError) Error() string {
 }
 
 // 無効な引数
-func NewInvalidArgumentError(msg string) (int, *ApiError) {
+func NewInvalidArgumentError(err error) (int, *ApiError) {
 	return ApiErrorCodeToStatusCode(InvalidArgument), &ApiError{
-		Err:     errors.New(msg),
-		Message: msg,
+		Err:     err,
+		Message: err.Error(),
 	}
 }
 
 // リソースが見つからない
-func NewResourceNotFoundError(msg string) (int, *ApiError) {
+func NewResourceNotFoundError(err error) (int, *ApiError) {
 	return ApiErrorCodeToStatusCode(ResourceNotFound), &ApiError{
-		Err:     errors.New(msg),
-		Message: msg,
+		Err:     err,
+		Message: err.Error(),
 	}
 }
 
 // リソースの競合
-func NewResourceConflictError(msg string) (int, *ApiError) {
+func NewResourceConflictError(err error) (int, *ApiError) {
 	return ApiErrorCodeToStatusCode(ResourceConflict), &ApiError{
-		Err:     errors.New(msg),
-		Message: msg,
+		Err:     err,
+		Message: err.Error(),
 	}
 }
 
 // // 権限拒否
-// func NewFailedPermissionDeniedError(msg string) (int, *ApiError) {
+// func NewFailedPermissionDeniedError(err error) (int, *ApiError) {
 // 	return ApiErrorCodeToStatusCode(PermissionDenied),&ApiError{
-// 		Err:     errors.New(msg),
-// 		Message: msg,
+// 		Err:     err,
+// 		Message: err.Error(),
 // 	}
 // }
 
 // // 前提条件未達
-// func NewFailedPreconditionError(msg string) (int, *ApiError) {
+// func NewFailedPreconditionError(err error) (int, *ApiError) {
 // 	return ApiErrorCodeToStatusCode(FailedPrecondition),&ApiError{
-// 		Err:     errors.New(msg),
-// 		Message: msg,
+// 		Err:     err,
+// 		Message: err.Error(),
 // 	}
 // }
 
 // // 認証エラー
-// func NewUnauthenticatedError(msg string) (int, *ApiError) {
+// func NewUnauthenticatedError(err error) (int, *ApiError) {
 // 	return ApiErrorCodeToStatusCode(Unauthenticated),&ApiError{
-// 		Err:     errors.New(msg),
-// 		Message: msg,
+// 		Err:     err,
+// 		Message: err.Error(),
 // 	}
 // }
 
-func NewInternalError(err error, msg string) (int, *ApiError) {
+func NewInternalError(err error) (int, *ApiError) {
 	return ApiErrorCodeToStatusCode(Internal), &ApiError{
 		Err:     err,
-		Message: msg,
+		Message: err.Error(),
 	}
 }
 
-// // サーバーや外部サービスが一時的にダウンしている、または負荷が高すぎて応答できない場合に使用
-// func NewUnavailableError(err error, msg string) (int, *ApiError) {
-// 	return ApiErrorCodeToStatusCode(Unavailable),&ApiError{
-// 		Err:     err,
-// 		Message: msg,
-// 	}
-// }
+// サーバーや外部サービスが一時的にダウンしている、または負荷が高すぎて応答できない場合に使用
+func NewUnavailableError(err error) (int, *ApiError) {
+	return ApiErrorCodeToStatusCode(Unavailable), &ApiError{
+		Err:     err,
+		Message: err.Error(),
+	}
+}

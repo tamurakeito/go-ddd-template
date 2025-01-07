@@ -75,11 +75,30 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 			}
 		}(),
 		func() test {
+			id := 3
+
+			mockHelloRepo.EXPECT().
+				Find(id).
+				Return(entity.Hello{}, repository.ErrDatabaseUnavailable).Times(1)
+
+			return test{
+				name: "database connection failed",
+				fields: fields{
+					helloRepo: mockHelloRepo,
+				},
+				args: args{
+					id: id,
+				},
+				wantDetail: entity.HelloWorld{},
+				wantErr:    ErrDatabaseUnavailable,
+			}
+		}(),
+		func() test {
 			id := 5
 
 			mockHelloRepo.EXPECT().
 				Find(id).
-				Return(entity.Hello{}, repository.ErrResourceNotFound,).Times(1)
+				Return(entity.Hello{}, repository.ErrResourceNotFound).Times(1)
 
 			return test{
 				name: "no data case",
@@ -120,13 +139,13 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 				helloRepo: tt.fields.helloRepo,
 			}
 			gotDetail, err := u.HelloWorldDetail(tt.args.id)
-	
+
 			// エラーが期待と一致しない場合
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("helloWorldUsecase.HelloWorldDetail() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-	
+
 			// 詳細結果が期待と一致しない場合
 			if !reflect.DeepEqual(gotDetail, tt.wantDetail) {
 				t.Errorf("helloWorldUsecase.HelloWorldDetail() = %v, want %v", gotDetail, tt.wantDetail)

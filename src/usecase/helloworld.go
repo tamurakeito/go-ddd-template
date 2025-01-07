@@ -22,7 +22,10 @@ func NewHelloWorldUsecase(helloRepo repository.HelloRepository) HelloWorldUsecas
 func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail entity.HelloWorld, err error) {
 	hello, err := u.helloRepo.Find(id)
 	if err != nil {
-		if errors.Is(err, repository.ErrResourceNotFound) {
+		if errors.Is(err, repository.ErrDatabaseUnavailable) {
+			err = ErrDatabaseUnavailable
+			return
+		} else if errors.Is(err, repository.ErrResourceNotFound) {
 			err = ErrResourceNotFound
 			return
 		}

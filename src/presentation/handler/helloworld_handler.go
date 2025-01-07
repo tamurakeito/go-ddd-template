@@ -24,14 +24,16 @@ func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
+			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
 		entity, err := handler.helloUsecase.HelloWorldDetail(id)
 		if err != nil {
-			if errors.Is(err, usecase.ErrResourceNotFound) {
-				return c.JSON(api_error.NewResourceNotFoundError(err.Error()))
+			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
+				return c.JSON(api_error.NewUnavailableError(err))
+			} else if errors.Is(err, usecase.ErrResourceNotFound) {
+				return c.JSON(api_error.NewResourceNotFoundError(err))
 			} else {
-				return c.JSON(api_error.NewInternalError(err, err.Error()))
+				return c.JSON(api_error.NewInternalError(err))
 			}
 		}
 		return c.JSON(http.StatusOK, entity)

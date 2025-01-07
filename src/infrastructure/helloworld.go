@@ -17,7 +17,18 @@ func NewHelloRepository(sqlHandler SqlHandler) repository.HelloRepository {
 	return &helloRepository
 }
 
+func (helloRepo *HelloRepository) checkConnection() error {
+	if helloRepo.SqlHandler.Conn == nil {
+		log.Printf("[Error]HelloRepository: Database connection is nil")
+		return repository.ErrDatabaseUnavailable
+	}
+	return nil
+}
+
 func (helloRepo *HelloRepository) Find(id int) (hello entity.Hello, err error) {
+	if err = helloRepo.checkConnection(); err != nil {
+		return
+	}
 	row := helloRepo.SqlHandler.Conn.QueryRow("SELECT id, name, tag FROM hello_world WHERE id = ?", id)
 	err = row.Scan(&hello.Id, &hello.Name, &hello.Tag)
 	if err != nil {

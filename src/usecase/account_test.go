@@ -97,6 +97,31 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+			userId := "validUser"
+			password := "validPassword"
+			nilAccount := entity.Account{}
+
+			mockAccountRepo.EXPECT().
+				FindUserId(userId).
+				Return(nilAccount, repository.ErrDatabaseUnavailable)
+
+			return test{
+				name: "database connection failed",
+				fields: fields{
+					accountRepo: mockAccountRepo,
+					authServ:    mockAuthServ,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: password,
+				},
+				wantAccount: nilAccount,
+				wantToken:   "",
+				wantErr:     ErrDatabaseUnavailable,
+			}
+		}(),
+		func() test {
 			unknownUser := "unknownUser"
 			anyPaasword := "anyPassword"
 			nilAccount := entity.Account{}
@@ -106,7 +131,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				Return(nilAccount, repository.ErrResourceNotFound)
 
 			return test{
-				name: "User not found",
+				name: "user not found",
 				fields: fields{
 					accountRepo: mockAccountRepo,
 					authServ:    mockAuthServ,
@@ -136,7 +161,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				Return(err)
 
 			return test{
-				name: "Invalid password",
+				name: "invalid password",
 				fields: fields{
 					accountRepo: mockAccountRepo,
 					authServ:    mockAuthServ,
@@ -169,7 +194,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				Return("", err)
 
 			return test{
-				name: "Token generation error",
+				name: "token generation error",
 				fields: fields{
 					accountRepo: mockAccountRepo,
 					authServ:    mockAuthServ,
@@ -194,7 +219,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				Return(nilAccount, err)
 
 			return test{
-				name: "Unexpected error",
+				name: "unexpected error",
 				fields: fields{
 					accountRepo: mockAccountRepo,
 					authServ:    mockAuthServ,
@@ -211,28 +236,28 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 		}(),
 	}
 	for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            usecase := &accountUsecase{
-                accountRepo: tt.fields.accountRepo,
-                authServ:    tt.fields.authServ,
-                encryptServ: tt.fields.encryptServ,
-            }
-            gotAccount, gotToken, err := usecase.SignIn(tt.args.userId, tt.args.password)
-            // エラーが期待と一致しない場合
-            if !errors.Is(err, tt.wantErr) {
-                t.Errorf("accountUsecase.SignIn() error = %v, wantErr %v", err, tt.wantErr)
-                return
-            }
-            // アカウント結果が期待と一致しない場合
-            if !reflect.DeepEqual(gotAccount, tt.wantAccount) {
-                t.Errorf("accountUsecase.SignIn() gotAccount = %v, want %v", gotAccount, tt.wantAccount)
-            }
-            // トークンが期待と一致しない場合
-            if gotToken != tt.wantToken {
-                t.Errorf("accountUsecase.SignIn() gotToken = %v, want %v", gotToken, tt.wantToken)
-            }
-        })
-    }
+		t.Run(tt.name, func(t *testing.T) {
+			usecase := &accountUsecase{
+				accountRepo: tt.fields.accountRepo,
+				authServ:    tt.fields.authServ,
+				encryptServ: tt.fields.encryptServ,
+			}
+			gotAccount, gotToken, err := usecase.SignIn(tt.args.userId, tt.args.password)
+			// エラーが期待と一致しない場合
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("accountUsecase.SignIn() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			// アカウント結果が期待と一致しない場合
+			if !reflect.DeepEqual(gotAccount, tt.wantAccount) {
+				t.Errorf("accountUsecase.SignIn() gotAccount = %v, want %v", gotAccount, tt.wantAccount)
+			}
+			// トークンが期待と一致しない場合
+			if gotToken != tt.wantToken {
+				t.Errorf("accountUsecase.SignIn() gotToken = %v, want %v", gotToken, tt.wantToken)
+			}
+		})
+	}
 }
 
 func Test_accountUsecase_SignUp(t *testing.T) {
@@ -332,6 +357,37 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			hashedPassword := "hashedPassword"
 			name := "Valid User"
 			account := entity.Account{}
+			err := repository.ErrDatabaseUnavailable
+
+			mockAccountRepo.EXPECT().
+				Create(userId, hashedPassword, name).
+				Return(account, err).Times(1)
+			mockEncryptServ.EXPECT().
+				HashPassword(password).
+				Return(hashedPassword, nil).Times(1)
+
+			return test{
+				name: "hash password error",
+				fields: fields{
+					accountRepo: mockAccountRepo,
+					encryptServ: mockEncryptServ,
+				},
+				args: args{
+					userId:   userId,
+					password: password,
+					name:     name,
+				},
+				wantAccount: entity.Account{},
+				wantToken:   "",
+				wantErr:     ErrDatabaseUnavailable,
+			}
+		}(),
+		func() test {
+			userId := "validUser"
+			password := "validPassword"
+			hashedPassword := "hashedPassword"
+			name := "Valid User"
+			account := entity.Account{}
 			err := repository.ErrResourceConflict
 
 			mockEncryptServ.EXPECT().
@@ -394,25 +450,25 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			}
 		}(),
 	}
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            usecase := &accountUsecase{
-                accountRepo: tt.fields.accountRepo,
-                authServ:    tt.fields.authServ,
-                encryptServ: tt.fields.encryptServ,
-            }
-            gotAccount, gotToken, err := usecase.SignUp(tt.args.userId, tt.args.password, tt.args.name)
-            if !errors.Is(err, tt.wantErr) {
-                t.Errorf("accountUsecase.SignUp() error = %v, wantErr %v", err, tt.wantErr)
-                return
-            }
-            if !reflect.DeepEqual(gotAccount, tt.wantAccount) {
-                t.Errorf("accountUsecase.SignUp() gotAccount = %v, want %v", gotAccount, tt.wantAccount)
-            }
-            if gotToken != tt.wantToken {
-                t.Errorf("accountUsecase.SignUp() gotToken = %v, want %v", gotToken, tt.wantToken)
-            }
-            
-        })
-    }
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			usecase := &accountUsecase{
+				accountRepo: tt.fields.accountRepo,
+				authServ:    tt.fields.authServ,
+				encryptServ: tt.fields.encryptServ,
+			}
+			gotAccount, gotToken, err := usecase.SignUp(tt.args.userId, tt.args.password, tt.args.name)
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("accountUsecase.SignUp() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotAccount, tt.wantAccount) {
+				t.Errorf("accountUsecase.SignUp() gotAccount = %v, want %v", gotAccount, tt.wantAccount)
+			}
+			if gotToken != tt.wantToken {
+				t.Errorf("accountUsecase.SignUp() gotToken = %v, want %v", gotToken, tt.wantToken)
+			}
+
+		})
+	}
 }

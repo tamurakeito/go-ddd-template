@@ -32,7 +32,10 @@ func (u *accountUsecase) SignIn(userId string, password string) (account entity.
 	// ユーザーをリポジトリから取得
 	account, err = u.accountRepo.FindUserId(userId)
 	if err != nil {
-		if errors.Is(err, repository.ErrResourceNotFound) {
+		if errors.Is(err, repository.ErrDatabaseUnavailable) {
+			err = ErrDatabaseUnavailable
+			return
+		} else if errors.Is(err, repository.ErrResourceNotFound) {
 			err = ErrResourceNotFound
 			return
 		}
@@ -71,7 +74,10 @@ func (u *accountUsecase) SignUp(userId string, password string, name string) (ac
 
 	account, err = u.accountRepo.Create(userId, hashedPassword, name)
 	if err != nil {
-		if errors.Is(err, repository.ErrResourceConflict){
+		if errors.Is(err, repository.ErrDatabaseUnavailable) {
+			err = ErrDatabaseUnavailable
+			return
+		} else if errors.Is(err, repository.ErrResourceConflict) {
 			err = ErrResourceConflict
 			return
 		}

@@ -25,15 +25,17 @@ func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 		body := entity.SignInRequest{}
 
 		if err := c.Bind(&body); err != nil {
-			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
+			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
 
 		account, token, err := handler.accountUsecase.SignIn(body.UserId, body.Password)
 		if err != nil {
-			if errors.Is(err, usecase.ErrResourceNotFound) {
-				return c.JSON(api_error.NewResourceNotFoundError(err.Error()))
+			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
+				return c.JSON(api_error.NewUnavailableError(err))
+			} else if errors.Is(err, usecase.ErrResourceNotFound) {
+				return c.JSON(api_error.NewResourceNotFoundError(err))
 			} else {
-				return c.JSON(api_error.NewInternalError(err, err.Error()))
+				return c.JSON(api_error.NewInternalError(err))
 			}
 		}
 
@@ -52,15 +54,17 @@ func (handler *AccountHandler) SignUp() echo.HandlerFunc {
 		body := entity.SignUpRequest{}
 
 		if err := c.Bind(&body); err != nil {
-			return c.JSON(api_error.NewInvalidArgumentError(err.Error()))
+			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
 
 		account, token, err := handler.accountUsecase.SignUp(body.UserId, body.Password, body.Name)
 		if err != nil {
-			if errors.Is(err, usecase.ErrResourceConflict) {
-				return c.JSON(api_error.NewResourceConflictError(err.Error()))
+			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
+				return c.JSON(api_error.NewUnavailableError(err))
+			} else if errors.Is(err, usecase.ErrResourceConflict) {
+				return c.JSON(api_error.NewResourceConflictError(err))
 			} else {
-				return c.JSON(api_error.NewInternalError(err, err.Error()))
+				return c.JSON(api_error.NewInternalError(err))
 			}
 		}
 
