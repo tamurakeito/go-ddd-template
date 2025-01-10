@@ -35,7 +35,7 @@
     <script type="text/babel">
       const { useState } = React;
 
-      const CurlButton = ({ path, method, body }) => {
+      const CurlButton = ({ path, method, body, token, setToken }) => {
         const url = `http://localhost:8080/${path}`;
         const [response, setResponse] = useState(null);
         const [params, setParams] = useState("");
@@ -45,6 +45,7 @@
             method,
             headers: {
               "Content-Type": "application/json",
+              ...(token && { Authorization: `Bearer ${token}` }),
             },
             body: method === "GET" ? undefined : JSON.stringify(body),
           };
@@ -54,12 +55,28 @@
           );
 
           try {
+            await setResponse(null);
             const res = await fetch(url, requestOptions);
             const text = await res.text();
+
+            // レスポンスの解析
+            let jsonResponse = null;
+            try {
+              jsonResponse = JSON.parse(text);
+            } catch (e) {
+              console.warn("レスポンスがJSONではありません:", text);
+            }
+
             setResponse({
               status: res.status,
               body: text,
             });
+
+            // トークンがレスポンスに含まれている場合、状態を更新
+            if (jsonResponse && jsonResponse.token) {
+              setToken(jsonResponse.token); // 親コンポーネントから受け取ったsetTokenを利用
+              console.log("新しいトークン:", jsonResponse.token);
+            }
           } catch (error) {
             setResponse({
               status: 0,
@@ -92,28 +109,40 @@
         );
       };
 
-      ReactDOM.render(
-        <div>
-          <CurlButton
-            path="sign-in"
-            method="POST"
-            body={{
-              user_id: "exampleUser",
-              password: "examplePassword",
-            }}
-          />
-          <CurlButton
-            path="sign-up"
-            method="POST"
-            body={{
-              user_id: "exampleUser",
-              password: "examplePassword",
-              name: "Example Name",
-            }}
-          />
-        </div>,
-        document.getElementById("root")
-      );
+      const App = () => {
+        const [token, setToken] = useState(null);
+
+        return (
+          <div>
+            <div style={{ marginBottom: "20px" }}>
+              Token: {!!token ? token : "null"}
+            </div>
+            <CurlButton path="hello-world/1" method="GET" token={token} />
+            <CurlButton
+              path="sign-in"
+              method="POST"
+              body={{
+                user_id: "exampleUser",
+                password: "examplePassword",
+              }}
+              setToken={setToken}
+            />
+            <CurlButton
+              path="sign-up"
+              method="POST"
+              body={{
+                user_id: "exampleUser",
+                password: "examplePassword",
+                name: "Example Name",
+              }}
+              setToken={setToken}
+            />
+            <CurlButton path="slow" method="GET" />
+          </div>
+        );
+      };
+
+      ReactDOM.render(<App />, document.getElementById("root"));
     </script>
   </body>
 </html>

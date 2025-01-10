@@ -2,6 +2,11 @@ package service
 
 import "golang.org/x/crypto/bcrypt"
 
+type EncryptService interface {
+	ComparePassword(hashedPassword, password string) error
+	HashPassword(password string) (string, error)
+}
+
 // EncryptServiceはパスワード関連の機能を提供します
 type encryptService struct{}
 

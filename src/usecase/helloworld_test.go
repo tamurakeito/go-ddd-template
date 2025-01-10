@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"errors"
-	"go-ddd-template/mocks"
+	mocks "go-ddd-template/mocks/repository"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"reflect"

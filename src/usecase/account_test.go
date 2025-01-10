@@ -3,7 +3,8 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	"go-ddd-template/mocks"
+	mocks_repository "go-ddd-template/mocks/repository"
+	mocks_service "go-ddd-template/mocks/service"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/service"
@@ -39,9 +40,9 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockAccountRepo := mocks.NewMockAccountRepository(ctrl)
-	mockAuthServ := mocks.NewMockAuthService(ctrl)
-	mockEncryptServ := mocks.NewMockEncryptService(ctrl)
+	mockAccountRepo := mocks_repository.NewMockAccountRepository(ctrl)
+	mockAuthServ := mocks_service.NewMockAuthService(ctrl)
+	mockEncryptServ := mocks_service.NewMockEncryptService(ctrl)
 
 	type fields struct {
 		accountRepo repository.AccountRepository
@@ -264,9 +265,9 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockAccountRepo := mocks.NewMockAccountRepository(ctrl)
-	mockAuthServ := mocks.NewMockAuthService(ctrl)
-	mockEncryptServ := mocks.NewMockEncryptService(ctrl)
+	mockAccountRepo := mocks_repository.NewMockAccountRepository(ctrl)
+	mockAuthServ := mocks_service.NewMockAuthService(ctrl)
+	mockEncryptServ := mocks_service.NewMockEncryptService(ctrl)
 
 	type fields struct {
 		accountRepo repository.AccountRepository
