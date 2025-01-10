@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	entity "go-ddd-template/src/domain/entity"
 	reflect "reflect"
 
@@ -35,18 +36,18 @@ func (m *MockHelloRepository) EXPECT() *MockHelloRepositoryMockRecorder {
 }
 
 // Find mocks base method.
-func (m *MockHelloRepository) Find(id int) (entity.Hello, error) {
+func (m *MockHelloRepository) Find(ctx context.Context, id int) (entity.Hello, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", id)
+	ret := m.ctrl.Call(m, "Find", ctx, id)
 	ret0, _ := ret[0].(entity.Hello)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find.
-func (mr *MockHelloRepositoryMockRecorder) Find(id interface{}) *gomock.Call {
+func (mr *MockHelloRepositoryMockRecorder) Find(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockHelloRepository)(nil).Find), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockHelloRepository)(nil).Find), ctx, id)
 }
 
 // MockAccountRepository is a mock of AccountRepository interface.
@@ -73,31 +74,31 @@ func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockAccountRepository) Create(userId, password, name string) (entity.Account, error) {
+func (m *MockAccountRepository) Create(ctx context.Context, userId, password, name string) (entity.Account, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", userId, password, name)
+	ret := m.ctrl.Call(m, "Create", ctx, userId, password, name)
 	ret0, _ := ret[0].(entity.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockAccountRepositoryMockRecorder) Create(userId, password, name interface{}) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) Create(ctx, userId, password, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAccountRepository)(nil).Create), userId, password, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAccountRepository)(nil).Create), ctx, userId, password, name)
 }
 
 // FindUserId mocks base method.
-func (m *MockAccountRepository) FindUserId(userId string) (entity.Account, error) {
+func (m *MockAccountRepository) FindUserId(ctx context.Context, userId string) (entity.Account, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindUserId", userId)
+	ret := m.ctrl.Call(m, "FindUserId", ctx, userId)
 	ret0, _ := ret[0].(entity.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindUserId indicates an expected call of FindUserId.
-func (mr *MockAccountRepositoryMockRecorder) FindUserId(userId interface{}) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) FindUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserId", reflect.TypeOf((*MockAccountRepository)(nil).FindUserId), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUserId", reflect.TypeOf((*MockAccountRepository)(nil).FindUserId), ctx, userId)
 }

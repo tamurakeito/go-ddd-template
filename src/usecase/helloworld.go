@@ -1,13 +1,14 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 )
 
 type HelloWorldUsecase interface {
-	HelloWorldDetail(id int) (detail entity.HelloWorld, err error)
+	HelloWorldDetail(ctx context.Context,id int) (detail entity.HelloWorld, err error)
 }
 
 type helloWorldUsecase struct {
@@ -19,8 +20,8 @@ func NewHelloWorldUsecase(helloRepo repository.HelloRepository) HelloWorldUsecas
 	return &helloUsecase
 }
 
-func (u *helloWorldUsecase) HelloWorldDetail(id int) (detail entity.HelloWorld, err error) {
-	hello, err := u.helloRepo.Find(id)
+func (u *helloWorldUsecase) HelloWorldDetail(ctx context.Context,id int) (detail entity.HelloWorld, err error) {
+	hello, err := u.helloRepo.Find(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrDatabaseUnavailable) {
 			err = ErrDatabaseUnavailable

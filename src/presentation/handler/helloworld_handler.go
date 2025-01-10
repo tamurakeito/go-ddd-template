@@ -22,11 +22,12 @@ func NewHelloHandler(helloUsecase usecase.HelloWorldUsecase) HelloHandler {
 
 func (handler *HelloHandler) HelloWorldDetail() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
-		entity, err := handler.helloUsecase.HelloWorldDetail(id)
+		entity, err := handler.helloUsecase.HelloWorldDetail(ctx, id)
 		if err != nil {
 			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
 				return c.JSON(api_error.NewUnavailableError(err))

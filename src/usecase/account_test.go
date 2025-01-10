@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	mocks_repository "go-ddd-template/mocks/repository"
@@ -50,6 +51,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 		encryptServ service.EncryptService
 	}
 	type args struct {
+        ctx context.Context
 		userId   string
 		password string
 	}
@@ -65,6 +67,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 
 	tests := []test{
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -72,7 +75,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: "Vaild User"}
 
 			mockAccountRepo.EXPECT().
-				FindUserId(userId).
+				FindUserId(ctx, userId).
 				Return(account, nil).Times(1)
 			mockAuthServ.EXPECT().
 				GenerateToken(userId).
@@ -89,6 +92,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   userId,
 					password: password,
 				},
@@ -98,12 +102,13 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			nilAccount := entity.Account{}
 
 			mockAccountRepo.EXPECT().
-				FindUserId(userId).
+				FindUserId(ctx, userId).
 				Return(nilAccount, repository.ErrDatabaseUnavailable)
 
 			return test{
@@ -114,6 +119,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   userId,
 					password: password,
 				},
@@ -123,12 +129,13 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			unknownUser := "unknownUser"
 			anyPaasword := "anyPassword"
 			nilAccount := entity.Account{}
 
 			mockAccountRepo.EXPECT().
-				FindUserId(unknownUser).
+				FindUserId(ctx, unknownUser).
 				Return(nilAccount, repository.ErrResourceNotFound)
 
 			return test{
@@ -139,6 +146,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   unknownUser,
 					password: anyPaasword,
 				},
@@ -148,6 +156,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			hashedPassword := "hashedPassword"
 			wrongPassword := "wrongPassword"
@@ -155,7 +164,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			err := fmt.Errorf("invalid password")
 
 			mockAccountRepo.EXPECT().
-				FindUserId(userId).
+				FindUserId(ctx, userId).
 				Return(account, nil)
 			mockEncryptServ.EXPECT().
 				ComparePassword(hashedPassword, wrongPassword).
@@ -169,6 +178,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   userId,
 					password: wrongPassword,
 				},
@@ -178,6 +188,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -185,7 +196,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			err := fmt.Errorf("failed to generate token")
 
 			mockAccountRepo.EXPECT().
-				FindUserId(userId).
+				FindUserId(ctx, userId).
 				Return(account, nil)
 			mockEncryptServ.EXPECT().
 				ComparePassword(hashedPassword, password).
@@ -202,6 +213,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   userId,
 					password: password,
 				},
@@ -211,12 +223,13 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "anyUser"
 			nilAccount := entity.Account{}
 			err := fmt.Errorf("unexpected database error")
 
 			mockAccountRepo.EXPECT().
-				FindUserId(userId).
+				FindUserId(ctx, userId).
 				Return(nilAccount, err)
 
 			return test{
@@ -227,6 +240,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+					ctx: ctx,
 					userId:   userId,
 					password: "anyPassword",
 				},
@@ -243,7 +257,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				authServ:    tt.fields.authServ,
 				encryptServ: tt.fields.encryptServ,
 			}
-			gotAccount, gotToken, err := usecase.SignIn(tt.args.userId, tt.args.password)
+			gotAccount, gotToken, err := usecase.SignIn(tt.args.ctx, tt.args.userId, tt.args.password)
 			// エラーが期待と一致しない場合
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("accountUsecase.SignIn() error = %v, wantErr %v", err, tt.wantErr)
@@ -275,6 +289,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 		encryptServ service.EncryptService
 	}
 	type args struct {
+        ctx context.Context
 		userId   string
 		password string
 		name     string
@@ -291,6 +306,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 
 	tests := []test{
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -299,7 +315,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			account := entity.Account{Id: 1, UserId: userId, Password: hashedPassword, Name: name}
 
 			mockAccountRepo.EXPECT().
-				Create(userId, hashedPassword, name).
+				Create(ctx, userId, hashedPassword, name).
 				Return(account, nil).Times(1)
 			mockAuthServ.EXPECT().
 				GenerateToken(userId).
@@ -316,6 +332,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+                    ctx: ctx,
 					userId:   userId,
 					password: password,
 					name:     name,
@@ -326,6 +343,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "invalidPassword"
 			hashedPassword := ""
@@ -343,6 +361,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+                    ctx: ctx,
 					userId:   userId,
 					password: password,
 					name:     name,
@@ -353,6 +372,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -361,7 +381,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			err := repository.ErrDatabaseUnavailable
 
 			mockAccountRepo.EXPECT().
-				Create(userId, hashedPassword, name).
+				Create(ctx, userId, hashedPassword, name).
 				Return(account, err).Times(1)
 			mockEncryptServ.EXPECT().
 				HashPassword(password).
@@ -374,6 +394,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+                    ctx: ctx,
 					userId:   userId,
 					password: password,
 					name:     name,
@@ -384,6 +405,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -395,7 +417,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				HashPassword(password).
 				Return(hashedPassword, nil).Times(1)
 			mockAccountRepo.EXPECT().
-				Create(userId, hashedPassword, name).
+				Create(ctx, userId, hashedPassword, name).
 				Return(account, err).Times(1)
 
 			return test{
@@ -405,6 +427,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+                    ctx: ctx,
 					userId:   userId,
 					password: password,
 					name:     name,
@@ -415,6 +438,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			userId := "validUser"
 			password := "validPassword"
 			hashedPassword := "hashedPassword"
@@ -427,7 +451,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				HashPassword(password).
 				Return(hashedPassword, nil).Times(1)
 			mockAccountRepo.EXPECT().
-				Create(userId, hashedPassword, name).
+				Create(ctx, userId, hashedPassword, name).
 				Return(account, nil).Times(1)
 			mockAuthServ.EXPECT().
 				GenerateToken(userId).
@@ -441,6 +465,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 					encryptServ: mockEncryptServ,
 				},
 				args: args{
+                    ctx: ctx,
 					userId:   userId,
 					password: password,
 					name:     name,
@@ -458,7 +483,7 @@ func Test_accountUsecase_SignUp(t *testing.T) {
 				authServ:    tt.fields.authServ,
 				encryptServ: tt.fields.encryptServ,
 			}
-			gotAccount, gotToken, err := usecase.SignUp(tt.args.userId, tt.args.password, tt.args.name)
+			gotAccount, gotToken, err := usecase.SignUp(tt.args.ctx, tt.args.userId, tt.args.password, tt.args.name)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("accountUsecase.SignUp() error = %v, wantErr %v", err, tt.wantErr)
 				return

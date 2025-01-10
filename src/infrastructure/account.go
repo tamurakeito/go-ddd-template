@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"go-ddd-template/src/domain/entity"
@@ -25,7 +26,7 @@ func (accountRepo *AccountRepository) checkConnection() error {
 	return nil
 }
 
-func (accountRepo *AccountRepository) FindUserId(userId string) (account entity.Account, err error) {
+func (accountRepo *AccountRepository) FindUserId(ctx context.Context,userId string) (account entity.Account, err error) {
 	if err = accountRepo.checkConnection(); err != nil {
 		return
 	}
@@ -43,7 +44,7 @@ func (accountRepo *AccountRepository) FindUserId(userId string) (account entity.
 	return
 }
 
-func (accountRepo *AccountRepository) Create(userId string, password string, name string) (account entity.Account, err error) {
+func (accountRepo *AccountRepository) Create(ctx context.Context,userId string, password string, name string) (account entity.Account, err error) {
 	if err = accountRepo.checkConnection(); err != nil {
 		return
 	}

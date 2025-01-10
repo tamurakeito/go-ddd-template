@@ -22,13 +22,14 @@ func NewAccountHandler(accountUsecase usecase.AccountUsecase) AccountHandler {
 
 func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 		body := entity.SignInRequest{}
 
 		if err := c.Bind(&body); err != nil {
 			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
 
-		account, token, err := handler.accountUsecase.SignIn(body.UserId, body.Password)
+		account, token, err := handler.accountUsecase.SignIn(ctx, body.UserId, body.Password)
 		if err != nil {
 			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
 				return c.JSON(api_error.NewUnavailableError(err))
@@ -51,13 +52,14 @@ func (handler *AccountHandler) SignIn() echo.HandlerFunc {
 
 func (handler *AccountHandler) SignUp() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 		body := entity.SignUpRequest{}
 
 		if err := c.Bind(&body); err != nil {
 			return c.JSON(api_error.NewInvalidArgumentError(err))
 		}
 
-		account, token, err := handler.accountUsecase.SignUp(body.UserId, body.Password, body.Name)
+		account, token, err := handler.accountUsecase.SignUp(ctx, body.UserId, body.Password, body.Name)
 		if err != nil {
 			if errors.Is(err, usecase.ErrDatabaseUnavailable) {
 				return c.JSON(api_error.NewUnavailableError(err))

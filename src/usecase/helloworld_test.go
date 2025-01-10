@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	mocks "go-ddd-template/mocks/repository"
 	"go-ddd-template/src/domain/entity"
@@ -41,6 +42,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 		helloRepo repository.HelloRepository
 	}
 	type args struct {
+		ctx context.Context
 		id int
 	}
 	type test struct {
@@ -52,11 +54,12 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 	}
 	tests := []test{
 		func() test {
+            ctx := context.Background()
 			id := 1
 			hello := entity.Hello{Id: id, Name: "hello, world!", Tag: true}
 
 			mockHelloRepo.EXPECT().
-				Find(id).
+				Find(ctx, id).
 				Return(hello, nil).Times(1)
 
 			return test{
@@ -65,6 +68,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					helloRepo: mockHelloRepo,
 				},
 				args: args{
+					ctx: ctx,
 					id: id,
 				},
 				wantDetail: entity.HelloWorld{
@@ -75,10 +79,11 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			id := 3
 
 			mockHelloRepo.EXPECT().
-				Find(id).
+				Find(ctx, id).
 				Return(entity.Hello{}, repository.ErrDatabaseUnavailable).Times(1)
 
 			return test{
@@ -87,6 +92,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					helloRepo: mockHelloRepo,
 				},
 				args: args{
+					ctx: ctx,
 					id: id,
 				},
 				wantDetail: entity.HelloWorld{},
@@ -94,10 +100,11 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			id := 5
 
 			mockHelloRepo.EXPECT().
-				Find(id).
+				Find(ctx, id).
 				Return(entity.Hello{}, repository.ErrResourceNotFound).Times(1)
 
 			return test{
@@ -106,6 +113,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					helloRepo: mockHelloRepo,
 				},
 				args: args{
+					ctx: ctx,
 					id: id,
 				},
 				wantDetail: entity.HelloWorld{},
@@ -113,11 +121,12 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 			}
 		}(),
 		func() test {
+            ctx := context.Background()
 			id := 999
 			err := repository.ErrInternal
 
 			mockHelloRepo.EXPECT().
-				Find(id).
+				Find(ctx, id).
 				Return(entity.Hello{}, err).Times(1)
 
 			return test{
@@ -126,6 +135,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 					helloRepo: mockHelloRepo,
 				},
 				args: args{
+					ctx: ctx,
 					id: id,
 				},
 				wantDetail: entity.HelloWorld{},
@@ -138,7 +148,7 @@ func Test_helloWorldUsecase_HelloWorldDetail(t *testing.T) {
 			u := &helloWorldUsecase{
 				helloRepo: tt.fields.helloRepo,
 			}
-			gotDetail, err := u.HelloWorldDetail(tt.args.id)
+			gotDetail, err := u.HelloWorldDetail(tt.args.ctx, tt.args.id)
 
 			// エラーが期待と一致しない場合
 			if !errors.Is(err, tt.wantErr) {

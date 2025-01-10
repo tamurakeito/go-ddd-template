@@ -1,14 +1,15 @@
 package repository
 
 import (
+	"context"
 	"go-ddd-template/src/domain/entity"
 )
 
 type HelloRepository interface {
-	Find(id int) (hello entity.Hello, err error)
+	Find(ctx context.Context,id int) (hello entity.Hello, err error)
 }
 
 type AccountRepository interface {
-	FindUserId(userId string) (account entity.Account, err error)
-	Create(userId string, password string, name string) (account entity.Account, err error)
+	FindUserId(ctx context.Context,userId string) (account entity.Account, err error)
+	Create(ctx context.Context,userId string, password string, name string) (account entity.Account, err error)
 }

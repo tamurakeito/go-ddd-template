@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"go-ddd-template/src/domain/entity"
@@ -25,7 +26,7 @@ func (helloRepo *HelloRepository) checkConnection() error {
 	return nil
 }
 
-func (helloRepo *HelloRepository) Find(id int) (hello entity.Hello, err error) {
+func (helloRepo *HelloRepository) Find(ctx context.Context,id int) (hello entity.Hello, err error) {
 	if err = helloRepo.checkConnection(); err != nil {
 		return
 	}

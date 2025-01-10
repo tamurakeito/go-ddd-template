@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"log"
 
@@ -10,8 +11,8 @@ import (
 )
 
 type AccountUsecase interface {
-	SignIn(userId string, password string) (account entity.Account, token string, err error)
-	SignUp(userId string, password string, name string) (account entity.Account, token string, err error)
+	SignIn(ctx context.Context,userId string, password string) (account entity.Account, token string, err error)
+	SignUp(ctx context.Context,userId string, password string, name string) (account entity.Account, token string, err error)
 }
 
 type accountUsecase struct {
@@ -28,9 +29,9 @@ func NewAccountUsecase(accountRepo repository.AccountRepository, authServ servic
 	}
 }
 
-func (u *accountUsecase) SignIn(userId string, password string) (account entity.Account, token string, err error) {
+func (u *accountUsecase) SignIn(ctx context.Context,userId string, password string) (account entity.Account, token string, err error) {
 	// ユーザーをリポジトリから取得
-	account, err = u.accountRepo.FindUserId(userId)
+	account, err = u.accountRepo.FindUserId(ctx, userId)
 	if err != nil {
 		if errors.Is(err, repository.ErrDatabaseUnavailable) {
 			err = ErrDatabaseUnavailable
@@ -64,7 +65,7 @@ func (u *accountUsecase) SignIn(userId string, password string) (account entity.
 	return
 }
 
-func (u *accountUsecase) SignUp(userId string, password string, name string) (account entity.Account, token string, err error) {
+func (u *accountUsecase) SignUp(ctx context.Context,userId string, password string, name string) (account entity.Account, token string, err error) {
 	hashedPassword, err := u.encryptServ.HashPassword(password)
 	if err != nil {
 		log.Printf("[Error]AccountUsecase.HashPassword: %v", err)
@@ -72,7 +73,7 @@ func (u *accountUsecase) SignUp(userId string, password string, name string) (ac
 		return
 	}
 
-	account, err = u.accountRepo.Create(userId, hashedPassword, name)
+	account, err = u.accountRepo.Create(ctx, userId, hashedPassword, name)
 	if err != nil {
 		if errors.Is(err, repository.ErrDatabaseUnavailable) {
 			err = ErrDatabaseUnavailable
