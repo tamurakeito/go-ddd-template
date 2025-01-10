@@ -15,12 +15,12 @@ func main() {
 	accountHandler := injector.InjectAccountHandler()
 	jwtMiddleware := injector.InjectJWTMiddleware()
 	corsMiddleware := injector.InjectCORSMiddleware()
-	// timeoutMiddleware := injector.InjectTimeoutMiddleware()
+	timeoutMiddleware := injector.InjectTimeoutMiddleware()
 
 	e := echo.New()
 	// 共通のミドルウェア
 	e.Use(corsMiddleware.Handle)
-	// e.Use(corsMiddleware.Handle,timeoutMiddleware.Handle)
+	e.Use(corsMiddleware.Handle,timeoutMiddleware.Handle)
 
 	presentation.InitRouting(e, helloHandler, accountHandler, jwtMiddleware)
 	// Logger.Fatalはエラーメッセージをログに出力しアプリケーションを停止する

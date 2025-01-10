@@ -22,6 +22,7 @@ const (
 	// server error
 	Internal    = ApiErrorCode("E200100001")
 	Unavailable = ApiErrorCode("E200100002") // retryable
+	Timeout = ApiErrorCode("E200100003")
 	// 個別エラー
 )
 
@@ -48,6 +49,8 @@ func ApiErrorCodeToStatusCode(code ApiErrorCode) int {
 		return http.StatusInternalServerError
 	case Unavailable:
 		return http.StatusServiceUnavailable
+	case Timeout:
+		return http.StatusGatewayTimeout
 	}
 
 	return http.StatusInternalServerError

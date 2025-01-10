@@ -71,3 +71,10 @@ func NewUnavailableError(err error) (int, *ApiError) {
 		Message: err.Error(),
 	}
 }
+
+func NewTimeoutError(err error) (int, *ApiError) {
+	return ApiErrorCodeToStatusCode(Timeout), &ApiError{
+		Err:     err,
+		Message: err.Error(),
+	}
+}

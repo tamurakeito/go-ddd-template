@@ -7,6 +7,7 @@ import (
 	"go-ddd-template/src/presentation/middleware"
 	"go-ddd-template/src/service"
 	"go-ddd-template/src/usecase"
+	"time"
 )
 
 // InjectDB provides a SQL handler
@@ -62,6 +63,6 @@ func InjectJWTMiddleware() middleware.JWTMiddleware {
 func InjectCORSMiddleware() middleware.CORSMiddleware {
 	return middleware.NewCORSMiddleware()
 }
-// func InjectTimeoutMiddleware() middleware.TimeoutMiddleware {
-// 	return middleware.NewTimeoutMiddleware(5 * time.Second)
-// }
+func InjectTimeoutMiddleware() middleware.TimeoutMiddleware {
+	return middleware.NewTimeoutMiddleware(5 * time.Second)
+}
