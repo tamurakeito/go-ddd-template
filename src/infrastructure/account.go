@@ -7,6 +7,7 @@ import (
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"log"
+	"time"
 )
 
 type AccountRepository struct {
@@ -18,21 +19,24 @@ func NewAccountRepository(sqlHandler SqlHandler) repository.AccountRepository {
 	return &accountRepository
 }
 
-func (accountRepo *AccountRepository) checkConnection() error {
-	if accountRepo.SqlHandler.Conn == nil {
-		log.Printf("[Error]AccountRepository: Database connection is nil")
-		return repository.ErrDatabaseUnavailable
-	}
-	return nil
-}
-
 func (accountRepo *AccountRepository) FindUserId(ctx context.Context,userId string) (account entity.Account, err error) {
-	if err = accountRepo.checkConnection(); err != nil {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	
+	conn := accountRepo.SqlHandler.Conn
+	if conn == nil {
+		log.Printf("[Error]AccountRepository: Database connection is nil")
+		err =  repository.ErrDatabaseUnavailable
 		return
 	}
-	row := accountRepo.SqlHandler.Conn.QueryRow("SELECT id, user_id, password, name FROM accounts WHERE user_id = ?", userId)
+	row := conn.QueryRowContext(ctx, "SELECT id, user_id, password, name FROM accounts WHERE user_id = ?", userId)
 	err = row.Scan(&account.Id, &account.UserId, &account.Password, &account.Name)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			log.Printf("[Error]AccountRepository: Database connection timeout")
+			err = repository.ErrDatabaseUnavailable
+			return
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			err = repository.ErrResourceNotFound
 			return
@@ -45,11 +49,22 @@ func (accountRepo *AccountRepository) FindUserId(ctx context.Context,userId stri
 }
 
 func (accountRepo *AccountRepository) Create(ctx context.Context,userId string, password string, name string) (account entity.Account, err error) {
-	if err = accountRepo.checkConnection(); err != nil {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	conn := accountRepo.SqlHandler.Conn
+	if conn == nil {
+		log.Printf("[Error]AccountRepository: Database connection is nil")
+		err =  repository.ErrDatabaseUnavailable
 		return
 	}
-	result, err := accountRepo.SqlHandler.Conn.Exec("INSERT accounts(user_id, password, name) VALUES (?, ?, ?)", userId, password, name)
+	result, err := conn.ExecContext(ctx, "INSERT accounts(user_id, password, name) VALUES (?, ?, ?)", userId, password, name)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			log.Printf("[Error]AccountRepository: Database connection timeout")
+			err = repository.ErrDatabaseUnavailable
+			return
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			err = repository.ErrResourceConflict
 		}

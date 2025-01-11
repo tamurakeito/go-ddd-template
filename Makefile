@@ -24,6 +24,7 @@ mock:
 
 tests:
 	gotests -w -all ./src/usecase/$(FILE)
+	gotests -w -all ./src/infrastructure/$(FILE)
 
 ini:
 	chmod 755 .init.sh && ./.init.sh

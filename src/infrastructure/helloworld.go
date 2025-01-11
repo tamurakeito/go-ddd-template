@@ -7,6 +7,7 @@ import (
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
 	"log"
+	"time"
 )
 
 type HelloRepository struct {
@@ -18,21 +19,24 @@ func NewHelloRepository(sqlHandler SqlHandler) repository.HelloRepository {
 	return &helloRepository
 }
 
-func (helloRepo *HelloRepository) checkConnection() error {
-	if helloRepo.SqlHandler.Conn == nil {
-		log.Printf("[Error]HelloRepository: Database connection is nil")
-		return repository.ErrDatabaseUnavailable
-	}
-	return nil
-}
-
 func (helloRepo *HelloRepository) Find(ctx context.Context,id int) (hello entity.Hello, err error) {
-	if err = helloRepo.checkConnection(); err != nil {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	conn := helloRepo.SqlHandler.Conn
+	if conn == nil {
+		log.Printf("[Error]HelloRepository: Database connection is nil")
+		err = repository.ErrDatabaseUnavailable
 		return
 	}
-	row := helloRepo.SqlHandler.Conn.QueryRow("SELECT id, name, tag FROM hello_world WHERE id = ?", id)
+	row := conn.QueryRowContext(ctx, "SELECT id, name, tag FROM hello_world WHERE id = ?", id)
 	err = row.Scan(&hello.Id, &hello.Name, &hello.Tag)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			log.Printf("[Error]HelloRepository: Database connection timeout")
+			err = repository.ErrDatabaseUnavailable
+			return
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			err = repository.ErrResourceNotFound
 			return
