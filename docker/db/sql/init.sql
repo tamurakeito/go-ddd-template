@@ -17,7 +17,8 @@ CREATE TABLE accounts(
   user_id VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
   name VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (user_id) 
 );
 
 
