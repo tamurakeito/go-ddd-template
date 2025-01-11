@@ -24,10 +24,13 @@ mock:
 
 tests:
 	gotests -w -all ./src/usecase/$(FILE)
-	gotests -w -all ./src/infrastructure/$(FILE)
+	gotests -w -all ./src/infrastructure/repository_impl/$(FILE)
 
-ini:
-	chmod 755 .init.sh && ./.init.sh
+unit_test:
+	go test ./... -v
 
 local_test:
 	open tools/local_integration_test/test.html
+
+ini:
+	chmod 755 .init.sh && ./.init.sh

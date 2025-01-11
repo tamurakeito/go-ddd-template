@@ -9,6 +9,8 @@ import (
 	"go-ddd-template/src/infrastructure"
 	"log"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type AccountRepository struct {
@@ -34,7 +36,7 @@ func (accountRepo *AccountRepository) FindUserId(ctx context.Context,userId stri
 	err = row.Scan(&account.Id, &account.UserId, &account.Password, &account.Name)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			log.Printf("[Error]AccountRepository: Database connection timeout")
+			log.Printf("[Error]AccountRepository: Database timeout")
 			err = repository.ErrDatabaseUnavailable
 			return
 		}
@@ -62,12 +64,23 @@ func (accountRepo *AccountRepository) Create(ctx context.Context,userId string, 
 	result, err := conn.ExecContext(ctx, "INSERT accounts(user_id, password, name) VALUES (?, ?, ?)", userId, password, name)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			log.Printf("[Error]AccountRepository: Database connection timeout")
+			log.Printf("[Error]AccountRepository: Database timeout")
 			err = repository.ErrDatabaseUnavailable
 			return
 		}
 		if errors.Is(err, sql.ErrNoRows) {
 			err = repository.ErrResourceConflict
+		}
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+				case 1062:
+					// 一意性制約違反
+					err = repository.ErrResourceConflict
+					return
+				default:
+					err = repository.ErrInternal
+					return
+			}
 		}
 		log.Printf("[Error]AccountRepository.Create.exec: %v", err)
 		err = repository.ErrInternal

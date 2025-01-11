@@ -34,7 +34,7 @@ func (helloRepo *HelloRepository) Find(ctx context.Context,id int) (hello entity
 	err = row.Scan(&hello.Id, &hello.Name, &hello.Tag)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			log.Printf("[Error]HelloRepository: Database connection timeout")
+			log.Printf("[Error]HelloRepository: Database timeout")
 			err = repository.ErrDatabaseUnavailable
 			return
 		}
