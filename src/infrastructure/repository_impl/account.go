@@ -1,4 +1,4 @@
-package infrastructure
+package repository_impl
 
 import (
 	"context"
@@ -6,15 +6,16 @@ import (
 	"errors"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
+	"go-ddd-template/src/infrastructure"
 	"log"
 	"time"
 )
 
 type AccountRepository struct {
-	SqlHandler
+	infrastructure.SqlHandler
 }
 
-func NewAccountRepository(sqlHandler SqlHandler) repository.AccountRepository {
+func NewAccountRepository(sqlHandler infrastructure.SqlHandler) repository.AccountRepository {
 	accountRepository := AccountRepository{sqlHandler}
 	return &accountRepository
 }

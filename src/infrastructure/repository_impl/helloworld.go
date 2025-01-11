@@ -1,4 +1,4 @@
-package infrastructure
+package repository_impl
 
 import (
 	"context"
@@ -6,15 +6,16 @@ import (
 	"errors"
 	"go-ddd-template/src/domain/entity"
 	"go-ddd-template/src/domain/repository"
+	"go-ddd-template/src/infrastructure"
 	"log"
 	"time"
 )
 
 type HelloRepository struct {
-	SqlHandler
+	infrastructure.SqlHandler
 }
 
-func NewHelloRepository(sqlHandler SqlHandler) repository.HelloRepository {
+func NewHelloRepository(sqlHandler infrastructure.SqlHandler) repository.HelloRepository {
 	helloRepository := HelloRepository{sqlHandler}
 	return &helloRepository
 }

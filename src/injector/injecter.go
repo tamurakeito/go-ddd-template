@@ -3,6 +3,8 @@ package injector
 import (
 	"go-ddd-template/src/domain/repository"
 	"go-ddd-template/src/infrastructure"
+	"go-ddd-template/src/infrastructure/config"
+	"go-ddd-template/src/infrastructure/repository_impl"
 	"go-ddd-template/src/presentation/handler"
 	"go-ddd-template/src/presentation/middleware"
 	"go-ddd-template/src/service"
@@ -19,16 +21,16 @@ func InjectDB() infrastructure.SqlHandler {
 // Repository injection
 func InjectHelloRepository() repository.HelloRepository {
 	sqlHandler := InjectDB()
-	return infrastructure.NewHelloRepository(sqlHandler)
+	return repository_impl.NewHelloRepository(sqlHandler)
 }
 func InjectAccountRepository() repository.AccountRepository {
 	sqlHandler := InjectDB()
-	return infrastructure.NewAccountRepository(sqlHandler)
+	return repository_impl.NewAccountRepository(sqlHandler)
 }
 
 // Service injection
 func InjectAuthService() service.AuthService {
-	secretKey := infrastructure.LoadJWTSecret()
+	secretKey := config.LoadJWTSecret()
 	return service.NewAuthService(secretKey)
 }
 func InjectEncryptService() service.EncryptService {
