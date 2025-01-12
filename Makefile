@@ -1,14 +1,26 @@
+APP_ENV ?= development
+BUILD_DIR = docker
+APP_NAME = main
+
 build: generate-env
-	GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o docker/main src/main.go
+	GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(APP_NAME) src/main.go
 
 generate-env:
-	@SECRET_KEY=$$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 12); \
-	echo "JWT_SECRET_KEY=$$SECRET_KEY" > ./docker/.env
+	@echo "Generating .env file for $(APP_ENV) environment..."
+	@if [ "$(APP_ENV)" = "production" ]; then \
+		SECRET_KEY=$$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32); \
+		echo "APP_ENV=production" > $(BUILD_DIR)/.env; \
+		echo "JWT_SECRET_KEY=$$SECRET_KEY" >> $(BUILD_DIR)/.env; \
+	else \
+		SECRET_KEY=$$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32); \
+		echo "APP_ENV=development" > $(BUILD_DIR)/.env; \
+		echo "JWT_SECRET_KEY=$$SECRET_KEY" >> $(BUILD_DIR)/.env; \
+	fi
 
 start: build
 	cd docker && docker-compose up --build
 
-deploy: build
+deploy: build APP_ENV=production
 	eval "$(ssh-agent -s)"
 	ssh-add ~/.ssh/gcp_tamurakeito_key
 	rsync -avz docker/ tamurakeito@xx.xxx.xx.xx:/home/tamurakeito/go-ddd-template
