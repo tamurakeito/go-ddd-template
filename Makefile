@@ -42,7 +42,7 @@ unit_test:
 	go test ./... -v
 
 local_test:
-	open tools/local_integration_test/test.html
+	open tools/local_integration_test/general.html
 
 ini:
 	chmod 755 .init.sh && ./.init.sh
