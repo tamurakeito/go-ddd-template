@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	fmt.Println("sever start")
+	fmt.Println("server start")
 	helloHandler := injector.InjectHelloHandler()
 	accountHandler := injector.InjectAccountHandler()
 	lineMessageHandler := injector_line.InjectLineMessageHandler()
@@ -26,7 +26,6 @@ func main() {
 
 	presentation.InitRouting(e, helloHandler, accountHandler, lineMessageHandler, jwtMiddleware)
 	// Logger.Fatalはエラーメッセージをログに出力しアプリケーションを停止する
-	// 重要なエラーが発生した場合に使用される
-	// 普通のエラーは通常のエラーハンドリングを使おう
+	// 重要なエラーが発生した場合に使用
 	e.Logger.Fatal(e.Start(":8080"))
 }
