@@ -19,12 +19,15 @@ ssh:
 
 mock:
 	mockgen -source=src/domain/repository/repository.go -destination=mocks/repository/mock_repository.go -package=mocks
+	mockgen -source=src/domain/repository/line/message.go -destination=mocks/repository/line/mock_message.go -package=mocks
 	mockgen -source=src/service/auth_service.go -destination=mocks/service/mock_auth_service.go -package=mocks
 	mockgen -source=src/service/encrypt_service.go -destination=mocks/service/mock_encrypt_service.go -package=mocks
 
 tests:
 	gotests -w -all ./src/usecase/$(FILE)
 	gotests -w -all ./src/infrastructure/repository_impl/$(FILE)
+	gotests -w -all ./src/usecase/line/$(FILE)
+	gotests -w -all ./src/infrastructure/repository_impl/line/$(FILE)
 
 unit_test:
 	go test ./... -v

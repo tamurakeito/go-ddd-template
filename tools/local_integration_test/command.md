@@ -30,3 +30,15 @@ curl -X POST \
 }' \
 http://localhost:8080/sign-up
 ```
+
+**`line-notify-user`**
+
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d '{
+  "user_id": "exampleUser",
+  "message": "test message.\nHello, world!"
+}' \
+http://localhost:8080/line-notify-user
+```
