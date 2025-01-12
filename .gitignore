@@ -24,4 +24,4 @@ docker/main
 
 .env
 
-.DS_Store
+*.DS_Store
