@@ -7,6 +7,7 @@ import (
 	"fmt"
 	repository_line "go-ddd-template/src/domain/repository/line"
 	infrastructure_line "go-ddd-template/src/infrastructure/line"
+	"io"
 	"net/http"
 )
 
@@ -36,6 +37,7 @@ func (lineRepo *LineMessageRepository) PushMessage(ctx context.Context, userId s
 
     req, err := http.NewRequest("POST", lineRepo.apiEndpoint+infrastructure_line.PushMessagePath, bytes.NewBuffer(reqBytes))
     if err != nil {
+        // ここに想定されるエラーハンドリング
         return err
     }
 
@@ -44,12 +46,20 @@ func (lineRepo *LineMessageRepository) PushMessage(ctx context.Context, userId s
 
     resp, err := lineRepo.httpClient.Do(req)
     if err != nil {
+        // ここに想定されるエラーハンドリング
         return err
     }
     defer resp.Body.Close()
 
+    // レスポンスボディを読み取る
+    respBody, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return fmt.Errorf("failed to read response body: %w", err)
+    }
+
+    // ステータスコード確認
     if resp.StatusCode != http.StatusOK {
-        return fmt.Errorf("failed to send message: status %d", resp.StatusCode)
+        return fmt.Errorf("failed to send message: status %d, response %s", resp.StatusCode, string(respBody))
     }
     return nil
 }

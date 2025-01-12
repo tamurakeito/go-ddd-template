@@ -137,6 +137,14 @@
               }}
               setToken={setToken}
             />
+            <CurlButton
+              path="line-notify-user"
+              method="POST"
+              body={{
+                user_id: "U2f0e4b14db1bae6d4253b65167022140",
+                message: "test message.\nHello, world!",
+              }}
+            />
             <CurlButton path="slow" method="GET" />
           </div>
         );
