@@ -35,7 +35,14 @@
     <script type="text/babel">
       const { useState } = React;
 
-      const CurlButton = ({ path, method, body, token, setToken }) => {
+      const CurlButton = ({
+        name,
+        path,
+        method,
+        body,
+        token,
+        setToken = () => {},
+      }) => {
         const url = `http://localhost:8080/${path}`;
         const [response, setResponse] = useState(null);
         const [params, setParams] = useState("");
@@ -87,6 +94,7 @@
 
         return (
           <div>
+            <div style={{ marginBottom: "12px" }}>{name}</div>
             <button onClick={handleButtonClick}>Execute: /{path}</button>
             <div style={{ marginTop: "20px" }}>
               <h3>Request Parameters:</h3>
@@ -117,15 +125,41 @@
             <div style={{ marginBottom: "20px" }}>
               Token: {!!token ? token : "null"}
             </div>
-            <CurlButton path="hello-world/1" method="GET" token={token} />
             <CurlButton
+              name="hello-world"
+              path="hello-world/1"
+              method="GET"
+              token={token}
+            />
+            <CurlButton
+              name="sign-in success"
               path="sign-in"
               method="POST"
               body={{
                 user_id: "exampleUser",
                 password: "examplePassword",
               }}
-              setToken={setToken}
+              // setToken={setToken}
+            />
+            <CurlButton
+              name="sign-in invalid user"
+              path="sign-in"
+              method="POST"
+              body={{
+                user_id: "invalidUser",
+                password: "examplePassword",
+              }}
+              // setToken={setToken}
+            />
+            <CurlButton
+              name="sign-in invalid password"
+              path="sign-in"
+              method="POST"
+              body={{
+                user_id: "exampleUser",
+                password: "invalidPassword",
+              }}
+              // setToken={setToken}
             />
             <CurlButton
               path="sign-up"
@@ -135,7 +169,7 @@
                 password: "examplePassword",
                 name: "Example Name",
               }}
-              setToken={setToken}
+              // setToken={setToken}
             />
             <CurlButton path="slow" method="GET" />
           </div>

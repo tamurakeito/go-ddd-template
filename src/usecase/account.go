@@ -46,13 +46,8 @@ func (u *accountUsecase) SignIn(ctx context.Context,userId string, password stri
 
 	err = u.encryptServ.ComparePassword(account.Password, password)
 	if err != nil {
-		if errors.Is(err, repository.ErrResourceNotFound) {
-			log.Printf("[Error]AccountUsecase.ComparePassword: invalid password")
-			err = ErrResourceNotFound // セキュリティの観点からユーザーが存在しない場合と同じエラーを返す
-			return
-		}
 		log.Printf("[Error]AccountUsecase.ComparePassword: %v", err)
-		err = ErrInternal
+		err = ErrResourceNotFound // セキュリティの観点からユーザーが存在しない場合と同じエラーを返す
 		return
 	}
 

@@ -68,9 +68,7 @@ func (accountRepo *AccountRepository) Create(ctx context.Context,userId string, 
 			err = repository.ErrDatabaseUnavailable
 			return
 		}
-		if errors.Is(err, sql.ErrNoRows) {
-			err = repository.ErrResourceConflict
-		}
+		
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			switch mysqlErr.Number {
 				case 1062:
@@ -78,8 +76,7 @@ func (accountRepo *AccountRepository) Create(ctx context.Context,userId string, 
 					err = repository.ErrResourceConflict
 					return
 				default:
-					err = repository.ErrInternal
-					return
+					break;
 			}
 		}
 		log.Printf("[Error]AccountRepository.Create.exec: %v", err)

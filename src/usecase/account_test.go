@@ -184,7 +184,7 @@ func Test_accountUsecase_SignIn(t *testing.T) {
 				},
 				wantAccount: account,
 				wantToken:   "",
-				wantErr:     ErrInternal,
+				wantErr:     ErrResourceNotFound,
 			}
 		}(),
 		func() test {
